@@ -1,5 +1,6 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { ObjectId } from "@mikro-orm/mongodb";
+import { Book } from "./Book";
 
 @Entity()
 export class BookCase {
@@ -47,4 +48,7 @@ export class BookCase {
 
     @Property()
     type?: String;
+
+    @OneToMany('Book', 'location')
+    books!: Book[]
 }
