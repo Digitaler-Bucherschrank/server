@@ -1,7 +1,7 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import {Get, Injectable, Post } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
-import { BookCase } from 'src/entities/BookCase';
+import { BookCase } from 'src/database/entities/BookCase';
 
 @Controller('api')
 export class ApiController {
