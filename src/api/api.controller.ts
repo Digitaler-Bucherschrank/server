@@ -1,18 +1,23 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import {Get, Injectable, Post } from '@nestjs/common';
+import { Get, Injectable, Post } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { BookCase } from 'src/database/entities/BookCase';
+import { UserDbService } from "../database/services/user.db.service";
 
 @Controller('api')
+// TODO: Add Endpoints
 export class ApiController {
-    constructor( private readonly orm: MikroORM,
-                private readonly em: EntityManager) {
+  constructor(private readonly userdbService: UserDbService) {}
 
-    }
+  @Get()
+  async addBookCase(): Promise<boolean> {
+    let res = this.userdbService.insertUser(this.userdbService.getUserRepository().create({
+      username: "Flawn",
+      mail: "test@example.com",
+      passwordhash: "hashkuchen",
+      createdAt: new Date()
+    }))
 
-    @Get()
-    async addBookCase(): Promise<String> {
-        var book = await this.em.getRepository(BookCase).find({address: "Hemmstraße 185"}).then((res) => console.log(res))
-        return "gg"
-    }
+    return res
+  }
 }
