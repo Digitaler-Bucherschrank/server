@@ -11,7 +11,7 @@ export class Book {
     @Property()
     gbookid!: String;
 
-    @OneToOne()
+    @OneToOne(() => User)
     donor: User;
 
     @ManyToOne()

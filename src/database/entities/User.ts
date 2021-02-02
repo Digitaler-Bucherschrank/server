@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
 import { ObjectId } from "@mikro-orm/mongodb";
 import { Book } from "./Book";
 
@@ -8,20 +8,20 @@ export class User {
     _id: ObjectId;
 
     @Property()
-    username: String
+    username!: String
 
     @Property()
-    mail: String
+    mail!: String
 
     @Property()
-    passwordhash: String
+    passwordhash!: String
 
-    @ManyToOne()
-    borrowedBooks: Book[]
+    @ManyToOne(() => Book)
+    borrowedBooks = new Collection<Book>(this)
 
-    @ManyToOne()
-    donatedBooks: Book[]
+    @ManyToOne(() => Book)
+    donatedBooks = new Collection<Book>(this)
 
     @Property()
-    createdAt: Date
+    createdAt!: Date
 }
