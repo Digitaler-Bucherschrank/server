@@ -2,4 +2,4 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class LogEntryService {}
+export class BookCaseDbService {}
