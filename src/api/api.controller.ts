@@ -9,15 +9,20 @@ import { UserDbService } from "../database/services/user.db.service";
 export class ApiController {
   constructor(private readonly userdbService: UserDbService) {}
 
-  @Get()
-  async addBookCase(): Promise<boolean> {
+  @Get('adduser')
+  async addUser(): Promise<boolean> {
     let res = this.userdbService.insertUser(this.userdbService.getUserRepository().create({
-      username: "Flawn",
+      username: "Nick",
       mail: "test@example.com",
       passwordhash: "hashkuchen",
       createdAt: new Date()
     }))
 
     return res
+  }
+
+  @Post('login')
+  async login(): Promise<boolean> {
+    return true
   }
 }

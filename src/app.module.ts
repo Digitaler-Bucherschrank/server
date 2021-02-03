@@ -7,6 +7,7 @@ import { FetcherModule } from './fetcher/fetcher.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { CustomNamingStrategy } from './database/entities/CustomNamingStrategy';
 
+// TODO: Authentifizierung hinzufügen (siehe NestJS Dokumentation)
 @Module({
   imports: [DatabaseModule, ApiModule, FetcherModule,
     MikroOrmModule.forRoot({
