@@ -11,10 +11,16 @@ export class Book {
     @Property()
     gbookid!: String;
 
+    @Property()
+    author!: String;
+
+    @Property()
+    title!: String;
+
     @OneToOne(() => User)
     donor: User;
 
     @ManyToOne()
-    location: BookCase;
+    location!: BookCase;
 
 }

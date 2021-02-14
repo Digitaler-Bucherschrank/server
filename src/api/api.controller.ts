@@ -14,7 +14,7 @@ export class ApiController {
     let res = this.userdbService.insertUser(this.userdbService.getUserRepository().create({
       username: "Nick",
       mail: "test@example.com",
-      passwordhash: "hashkuchen",
+      passwordhash: "gg",
       createdAt: new Date()
     }))
 

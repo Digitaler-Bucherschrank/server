@@ -17,10 +17,10 @@ export class User {
     passwordhash!: String
 
     @ManyToOne(() => Book)
-    borrowedBooks = new Collection<Book>(this)
+    borrowedBooks? = new Collection<Book>(this)
 
     @ManyToOne(() => Book)
-    donatedBooks = new Collection<Book>(this)
+    donatedBooks? = new Collection<Book>(this)
 
     @Property()
     createdAt!: Date
