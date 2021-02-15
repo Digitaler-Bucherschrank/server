@@ -35,3 +35,6 @@ lerna-debug.log*
 
 # Credentials
 src/credentials.json
+
+# Cache
+api_cache
