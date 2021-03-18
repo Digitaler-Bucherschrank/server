@@ -31,5 +31,11 @@ export class UserDbService {
 
   async deleteUser(user: User) {}
 
-  async getUser(query: FilterQuery<User>) {}
+  //TODO: Implement all User-related database operations to implement authentication
+  // 1. implement getUser() function
+  // 2. finish UsersService
+  // 3. implement authentication strategy
+  async getUser(query: FilterQuery<User>) {
+
+  }
 }

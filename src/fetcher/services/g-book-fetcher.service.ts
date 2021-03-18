@@ -2,14 +2,14 @@ import { CACHE_MANAGER, HttpService, Inject, Injectable } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { GoogleBook } from "../entities/GoogleBook";
 import axios from "axios"
-const credentials = require('./../../credentials.json');
+const credentials = require('../../credentials');
 
-
+//TODO: Bücher mit ISBN suchen lassen
 @Injectable()
 export class GBookFetcherService {
     constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache, private httpService: HttpService) {}
 
-    async getBookInformations(ids: string[]): Promise<GoogleBook[]> {
+    async getBookInformation(ids: string[]): Promise<GoogleBook[]> {
       let cache: GoogleBook[] = await this.checkIfInCache(ids)
       let promises: Promise<any>[] = []
       ids.forEach((e, i) => {
