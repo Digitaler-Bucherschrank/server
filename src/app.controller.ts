@@ -8,6 +8,6 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<GoogleBook[]> {
-    return await this.fetcher.getBookInformations(["B8oNAQAAMAAJ", "f94S3a1SzvoC"]).then(res => {return res});
+    return await this.fetcher.getBookInformation(["B8oNAQAAMAAJ", "f94S3a1SzvoC", "eGdoAAAAcAAJ", "uzr8NqDkfcQC", "sSaIAAAAQBAJ"]).then(res => {return res});
   }
 }
