@@ -5,11 +5,13 @@ Big shoutout to the Polytechnische Gesellschaft which is sponsoring us!
 
 ## Installation
 
+```bash
 $ npm install
-
+```
 
 ## Running the app
 
+```bash
 # development
 $ npm run start
 
@@ -18,7 +20,7 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
-
+```
 
 ## Support & Stay in touch
 
