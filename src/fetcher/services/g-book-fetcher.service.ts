@@ -39,5 +39,26 @@ export class GBookFetcherService {
       }
       return res
     }
+
+  async getBookByISBN(ids: string[]): Promise<GoogleBook[]> {
+    let cache: GoogleBook[] = await this.checkIfInCache(ids)
+    let promises: Promise<any>[] = []
+    ids.forEach((e, i) => {
+      if(cache[i] == undefined){
+        promises.push(this.httpService.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${e}`).toPromise())
+      }
+    })
+    return await axios.all(promises).then(axios.spread(async (...responses) => {
+      let index = 0
+      for(let i in cache){
+        if(cache[i] == null){
+          cache[i] = responses[index].data
+          await this.cacheManager.set(responses[index].data.id, responses[index].data)
+          index++
+        }
+      }
+      return cache
+    }))
+  }
 }
 
