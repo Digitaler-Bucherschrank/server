@@ -9,13 +9,13 @@ export class Book {
     _id: ObjectId;
 
     @Property()
-    gbookid!: String;
+    gbookid!: string;
 
     @Property()
-    author!: String;
+    author!: string;
 
     @Property()
-    title!: String;
+    title!: string;
 
     @OneToOne(() => User)
     donor: User;

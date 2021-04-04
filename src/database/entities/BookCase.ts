@@ -8,46 +8,46 @@ export class BookCase {
     _id: ObjectId;
 
     @Property()
-    address!: String;
+    address!: string;
 
     @Property()
-    bcz?: String;
+    bcz?: string;
 
     @Property()
-    comment?: String;
+    comment?: string;
 
     @Property()
-    contact!: String;
+    contact!: string;
 
     @Property()
     deactivated?: Boolean;
 
     @Property()
-    deactreason?: String;
+    deactreason?: string;
 
     @Property()
     digital?: boolean;
 
     @Property()
-    entrytype?: String;
+    entrytype?: string;
 
     @Property()
-    homepage?: String;
+    homepage?: string;
 
     @Property()
-    lat!: String;
+    lat!: string;
 
     @Property()
-    long!: String;
+    long!: string;
 
     @Property()
-    open?: String;
+    open?: string;
 
     @Property()
-    title!: String;
+    title!: string;
 
     @Property()
-    type?: String;
+    type?: string;
 
     @OneToMany('Book', 'location')
     books!: Book[]
