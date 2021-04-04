@@ -1,54 +1,40 @@
-import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { Get, Query, Post, Body, Put, Param, Delete, Req } from '@nestjs/common';
+import { Get, Post, Body, UseGuards, Request } from "@nestjs/common";
 import { Controller } from '@nestjs/common';
-import { BookCase } from 'src/database/entities/BookCase';
 import { UserDbService } from "../database/services/user.db.service";
 import { BookDbService } from "../database/services/book.db.service";
-import { Request } from 'express';
 import { Book } from 'src/database/entities/Book';
 import { User } from 'src/database/entities/User';
+import { GBookFetcherService } from "../fetcher/services/g-book-fetcher.service";
+import { AuthGuard } from "@nestjs/passport";
+import { AuthService } from "../auth/auth.service";
 
 @Controller('api')
-// TODO: Add Endpoints
+// TODO: finish implementing Endpoints & individualized responses corresponding to the error (wrong password etc.)
 export class ApiController {
-  constructor(private readonly userdbService: UserDbService, private readonly bookdbService: BookDbService) {}
+  constructor(private authService: AuthService, private readonly userdbService: UserDbService, private readonly fetcherService: GBookFetcherService, private readonly bookdbService: BookDbService) {}
 
-  @Post('addUser')
+  //TODO: add Validation of User
+  @Post('register')
   async addUser(@Body() createUser: User): Promise<boolean> {
     let res = this.userdbService.insertUser(this.userdbService.getUserRepository().create({
       username: createUser.username,
       mail: createUser.mail,
-      passwordhash: createUser.passwordhash,
+      passwordhash: createUser.hash,
       createdAt: new Date()
     }))
 
     return res
 
   }
-  /* @Get('updateUser')
-   async updateUser(): Promise<boolean> {
-     let res = this.userdbService.insertUser(this.userdbService.getUserRepository().create({
-       username: "Nick",
-       mail: "test@example.com",
-       passwordhash: "12345678#",
-       createdAt: new Date()
-     }))
-     return res
-
-   }*/
 
   @Get('searchBook')
   async searchBook(@Body() createBook: Book) {
     return this.bookdbService.getBooks( {  gbookid: createBook.gbookid,
       donor: createBook.donor});
-
-
-
   }
 
+  @UseGuards(AuthGuard('jwtAccess'))
   @Post('addBook')
-
-
   async addBook(@Body() createBook: Book): Promise<boolean> {
     let res = this.bookdbService.insertBook(this.bookdbService.getBookRepository().create({
       gbookid: createBook.gbookid,
@@ -60,13 +46,18 @@ export class ApiController {
     return res
 
   }
-  @Get('removeUser')
-  async deleteUser() {
-    let res = this.userdbService.deleteUser(this.userdbService.getUserRepository().create({
-      _id: "601ea3cc0de0794b4442299d",
-    }))
 
-    return res
-
+  @UseGuards(AuthGuard('jwtRefresh'))
+  @Post('refresh')
+  async getRefreshToken(@Request() req){
+    return await this.authService.refreshTokens(req.user)
   }
+
+  @UseGuards(AuthGuard('local'))
+  @Post('login')
+  async login(@Request() req){
+    return await this.authService.login(req.user)
+  }
+
+  // TODO: Logout route ==> delete access/refresh token pair
 }
