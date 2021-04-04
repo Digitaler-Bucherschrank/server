@@ -11,7 +11,7 @@ export class LogEntry {
     timestamp: Date
 
     @Property()
-    ip_address: String;
+    ip_address: string;
 
     @ManyToOne()
     user: User;

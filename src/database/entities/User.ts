@@ -8,13 +8,19 @@ export class User {
     _id: ObjectId;
 
     @Property()
-    username!: String
+    username!: string
 
     @Property()
-    mail!: String
+    mail!: string
 
     @Property()
-    passwordhash!: String
+    hash?: string
+
+    @Property()
+    tokens!: {client: string, token: string}[]
+
+    @Property()
+    client_id?: string
 
     @ManyToOne(() => Book)
     borrowedBooks? = new Collection<Book>(this)

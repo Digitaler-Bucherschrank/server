@@ -36,6 +36,6 @@ export class UserDbService {
   // 2. finish UsersService
   // 3. implement authentication strategy
   async getUser(query: FilterQuery<User>) {
-
+      return await this.userRepository.findOne(query)
   }
 }
