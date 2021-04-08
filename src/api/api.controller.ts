@@ -7,6 +7,8 @@ import { User } from 'src/database/entities/User';
 import { GBookFetcherService } from "../fetcher/services/g-book-fetcher.service";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "../auth/auth.service";
+import { JwtRefreshAuthGuard } from "../auth/guards/jwtrefresh.guard";
+import { JwtAccessAuthGuard } from "../auth/guards/jwtaccess.guard";
 
 @Controller('api')
 // TODO: finish implementing Endpoints & individualized responses corresponding to the error (wrong password etc.)
@@ -33,7 +35,7 @@ export class ApiController {
       donor: createBook.donor});
   }
 
-  @UseGuards(AuthGuard('jwtAccess'))
+  @UseGuards(JwtAccessAuthGuard)
   @Post('addBook')
   async addBook(@Body() createBook: Book): Promise<boolean> {
     let res = this.bookdbService.insertBook(this.bookdbService.getBookRepository().create({
@@ -47,7 +49,7 @@ export class ApiController {
 
   }
 
-  @UseGuards(AuthGuard('jwtRefresh'))
+  @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh')
   async getRefreshToken(@Request() req){
     return await this.authService.refreshTokens(req.user)
