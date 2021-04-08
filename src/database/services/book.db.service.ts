@@ -1,24 +1,25 @@
-import { EntityManager, EntityRepository, FilterQuery, MikroORM } from "@mikro-orm/core";
-import { Injectable } from "@nestjs/common";
+import { EntityManager, EntityRepository, FilterQuery } from "@mikro-orm/core";
+import { Injectable, Scope } from "@nestjs/common";
 import { Book } from "../entities/Book";
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT })
 export class BookDbService {
-  bookRepository: EntityRepository<Book> = this.em.getRepository(Book);
-
   constructor(
-    private readonly orm: MikroORM,
-    private readonly em: EntityManager,
-  ) {}
+    private readonly em: EntityManager
+  ) {
+  }
+
+  bookRepository: EntityRepository<Book> = this.em.fork(true, true).getRepository(Book);
+
 
   getBookRepository(): EntityRepository<Book> {
-    return this.bookRepository
+    return this.bookRepository;
   }
 
   async insertBook(book: Book): Promise<boolean> {
     return this.bookRepository.persistAndFlush(book).then(res => {
-      return res == undefined
-    })
+      return res == undefined;
+    });
   }
 
   async deleteBook(book: Book) {
