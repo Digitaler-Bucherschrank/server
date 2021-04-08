@@ -26,7 +26,7 @@ export class UserDbService {
   }
 
   async insertUser(user: User): Promise<boolean > {
-    return this.userRepository.persistAndFlush(user).then(res => { return res == undefined ? true : false})
+    return this.userRepository.persistAndFlush(user).then(res => { return res == undefined})
   }
 
   async deleteUser(user: User) {}
