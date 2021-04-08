@@ -17,9 +17,9 @@ export class User {
     hash?: string
 
     @Property()
-    tokens!: {client: string, token: string}[]
+    tokens!: {client: string, accessToken: { token: string, iat: string }, refreshToken: { token: string, iat: string }}[]
 
-    @Property()
+    // Not actually a database property, just for basic sessions tracking
     client_id?: string
 
     @ManyToOne(() => Book)
