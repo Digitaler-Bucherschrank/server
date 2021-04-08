@@ -1,11 +1,6 @@
-import {
-  EntityManager,
-  EntityRepository,
-  FilterQuery,
-  MikroORM,
-} from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
-import { User } from '../entities/User';
+import { EntityManager, EntityRepository, FilterQuery } from "@mikro-orm/core";
+import { Injectable, Scope } from "@nestjs/common";
+import { User } from "../entities/User";
 
 @Injectable()
 /**
@@ -13,19 +8,20 @@ import { User } from '../entities/User';
  */
 
 // TODO: auf andere Klassen auch übertragen
+@Injectable({ scope: Scope.TRANSIENT })
 export class UserDbService {
+  userRepository: EntityRepository<User> = this.em.fork(true, true).getRepository(User);
+
   constructor(
-    private readonly orm: MikroORM,
-    private readonly em: EntityManager,
-  ) {}
-
-  userRepository: EntityRepository<User> = this.em.getRepository(User);
-
-  getUserRepository(): EntityRepository<User>{
-    return this.userRepository
+    private readonly em: EntityManager
+  ) {
   }
 
-  async insertUser(user: User): Promise<boolean > {
+  getUserRepository(): EntityRepository<User> {
+    return this.userRepository;
+  }
+
+  async insertUser(user: User): Promise<boolean> {
     return this.userRepository.persistAndFlush(user).then(res => { return res == undefined})
   }
 
