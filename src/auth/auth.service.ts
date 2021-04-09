@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import { UserDbService } from "../database/services/user.db.service";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "../database/entities/User";
-import * as bcrypt from 'bcrypt';
-import { ObjectId } from "@mikro-orm/mongodb";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class AuthService {
@@ -69,17 +68,22 @@ export class AuthService {
       }
     })
 
-    await this.userDBService.userRepository.persistAndFlush(user)
+    await this.userDBService.getUserRepository().persistAndFlush(user);
     return tokens;
   }
 
   async refreshTokens(payload) {
     return {
-      access_token: this.jwtService.sign({ id: payload.id, cli: payload.cli}),
-      refresh_token: this.jwtService.sign({ id: payload.id, cli: payload.cli}, {
+      access_token: this.jwtService.sign({ id: payload.id, cli: payload.cli }),
+      refresh_token: this.jwtService.sign({ id: payload.id, cli: payload.cli }, {
         expiresIn: "60d",
         audience: "refresh"
       })
     };
+  }
+
+  // TODO: Logout route ==> delete access/refresh token pair
+  async logout(user) {
+    return Promise.resolve(undefined);
   }
 }

@@ -1,19 +1,20 @@
-import { Get, Post, Body, UseGuards, Request } from "@nestjs/common";
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
 import { UserDbService } from "../database/services/user.db.service";
 import { BookDbService } from "../database/services/book.db.service";
-import { Book } from 'src/database/entities/Book';
-import { User } from 'src/database/entities/User';
+import { Book } from "src/database/entities/Book";
+import { User } from "src/database/entities/User";
 import { GBookFetcherService } from "../fetcher/services/g-book-fetcher.service";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "../auth/auth.service";
 import { JwtRefreshAuthGuard } from "../auth/guards/jwtrefresh.guard";
 import { JwtAccessAuthGuard } from "../auth/guards/jwtaccess.guard";
 
-@Controller('api')
+@Controller("api")
 // TODO: finish implementing Endpoints & individualized responses corresponding to the error (wrong password etc.)
 export class ApiController {
-  constructor(private authService: AuthService, private readonly userdbService: UserDbService, private readonly fetcherService: GBookFetcherService, private readonly bookdbService: BookDbService) {}
+  constructor(private authService: AuthService, private readonly userdbService: UserDbService, private readonly fetcherService: GBookFetcherService, private readonly bookdbService: BookDbService) {
+  }
+
 
   //TODO: add Validation of User
   @Post('register')
@@ -51,15 +52,19 @@ export class ApiController {
 
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh')
-  async getRefreshToken(@Request() req){
-    return await this.authService.refreshTokens(req.user)
+  async getRefreshToken(@Request() req) {
+    return await this.authService.refreshTokens(req.user);
   }
 
-  @UseGuards(AuthGuard('local'))
-  @Post('login')
-  async login(@Request() req){
-    return await this.authService.login(req.user)
+  @UseGuards(AuthGuard("local"))
+  @Post("login")
+  async login(@Request() req) {
+    return await this.authService.login(req.user);
   }
 
-  // TODO: Logout route ==> delete access/refresh token pair
+  @UseGuards(JwtAccessAuthGuard)
+  @Post("logout")
+  async logout(@Request() req) {
+    return await this.authService.logout(req.user);
+  }
 }
