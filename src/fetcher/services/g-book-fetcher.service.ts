@@ -53,8 +53,8 @@ export class GBookFetcherService {
       let index = 0;
       for (let i in cache) {
         if (cache[i] == null) {
-          cache[i] = responses[index].data;
-          await this.cacheManager.set(responses[index].data.id, responses[index].data);
+          cache[i] = responses[index].data.items[0];
+          await this.cacheManager.set(responses[index].data.items[0].id, responses[index].data.items[0]);
           index++;
         }
       }

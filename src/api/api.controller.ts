@@ -12,7 +12,10 @@ import { JwtAccessAuthGuard } from "../auth/guards/jwtaccess.guard";
 @Controller("api")
 // TODO: finish implementing Endpoints & individualized responses corresponding to the error (wrong password etc.)
 export class ApiController {
-  constructor(private authService: AuthService, private readonly userdbService: UserDbService, private readonly fetcherService: GBookFetcherService, private readonly bookdbService: BookDbService) {
+  constructor(private authService: AuthService,
+     private readonly userdbService: UserDbService,
+      private readonly fetcherService: GBookFetcherService,
+       private readonly bookdbService: BookDbService) {
   }
 
 
@@ -33,7 +36,7 @@ export class ApiController {
   async searchBook(@Body() createBook: Body) {
     return this.bookdbService.findBooks(createBook);
   }
-
+ 
   @UseGuards(JwtAccessAuthGuard)
   @Post("addBook")
   async addBook(@Body() createBook: Book): Promise<boolean> {
@@ -57,7 +60,12 @@ export class ApiController {
   async login(@Request() req) {
     return await this.authService.login(req.user);
   }
-
+  @UseGuards(JwtAccessAuthGuard)
+  @Get('searchBookbyISBN')
+  async searchBookbyISBN() {
+   let res = await this.fetcherService.getBookByISBN(["%209783125781405"]);
+    return res[0];
+}
   @UseGuards(JwtAccessAuthGuard)
   @Post("logout")
   async logout(@Request() req) {
