@@ -19,25 +19,25 @@ export class User implements Base {
   _id: Types.ObjectId;
   id: string;
 
-  @prop({ unique: true })
+  @prop({ unique: true , required: true})
   username!: string;
 
-  @prop({ unique: true })
+  @prop({ unique: true , required: true})
   mail!: string;
 
-  @prop()
+  @prop({required: true})
   hash!: string;
 
-  @prop()
+  @prop({required: true, default: {}})
   tokens!: { client: string, accessToken: { token: string, iat: string }, refreshToken: { token: string, iat: string } }[];
 
   // Not actually a database property, just for basic sessions tracking
   client_id?: string;
 
-  @prop({ ref: () => Book })
+  @prop({ ref: () => Book , default: []})
   borrowedBooks?: Ref<Book>[];
 
-  @prop({ ref: () => Book })
+  @prop({ ref: () => Book , default: []})
   donatedBooks?: Ref<Book>[];
 
   @prop()

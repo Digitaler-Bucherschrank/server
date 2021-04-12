@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Post, Request, UseGuards } from "@nestjs/common";
 import { UserDbService } from "../database/services/user.db.service";
 import { BookDbService } from "../database/services/book.db.service";
-import { Book } from "src/database/entities/Book";
-import { User } from "src/database/entities/User";
+import { Book } from "src/database/schemas/Book";
+import { User } from "src/database/schemas/User";
 import { GBookFetcherService } from "../fetcher/services/g-book-fetcher.service";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "../auth/auth.service";

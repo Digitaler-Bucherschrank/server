@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { LogEntry } from "../entities/LogEntry";
+import { LogEntry } from "../schemas/LogEntry";
 import { InjectModel } from "nestjs-typegoose";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
 import { FilterQuery } from "mongoose";
-import { User } from "../entities/User";
+import { User } from "../schemas/User";
 
 @Injectable()
 export class LogEntryDbService {

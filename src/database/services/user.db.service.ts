@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { User } from "../entities/User";
+import { User } from "../schemas/User";
 import { InjectModel } from "nestjs-typegoose";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
 import { FilterQuery } from "mongoose";

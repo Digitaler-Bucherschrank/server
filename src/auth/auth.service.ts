@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UserDbService } from "../database/services/user.db.service";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "../database/entities/User";
+import { User } from "../database/schemas/User";
 import * as bcrypt from "bcrypt";
 import { DocumentType } from "@typegoose/typegoose";
 
