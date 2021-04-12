@@ -3,6 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Config } from "../../config";
 import { UserDbService } from "../../database/services/user.db.service";
+import { mongoose } from "@typegoose/typegoose";
 
 @Injectable()
 export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwtAccess") {
