@@ -1,6 +1,8 @@
-import { EntityManager, EntityRepository, FilterQuery } from "@mikro-orm/core";
-import { Injectable, Scope } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { User } from "../entities/User";
+import { InjectModel } from "nestjs-typegoose";
+import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
+import { FilterQuery } from "mongoose";
 
 @Injectable()
 /**
@@ -8,30 +10,63 @@ import { User } from "../entities/User";
  */
 
 // TODO: auf andere Klassen auch übertragen
-@Injectable({ scope: Scope.TRANSIENT })
+@Injectable()
 export class UserDbService {
-  userRepository: EntityRepository<User> = this.em.fork(true, true).getRepository(User);
-
   constructor(
-    private readonly em: EntityManager
+    @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>
   ) {
   }
 
-  getUserRepository(): EntityRepository<User> {
-    return this.userRepository;
+  getModel(): ReturnModelType<typeof User> {
+    return this.userModel
   }
 
   async insertUser(user: User): Promise<boolean> {
-    return this.userRepository.persistAndFlush(user).then(res => { return res == undefined})
+    const gg = new this.userModel(user)
+    return new Promise(function(fulfil, reject) {
+      gg.save(null, (err, res) => {
+        if(err){
+          throw new HttpException("incomplete_data", HttpStatus.BAD_REQUEST);
+        } else {
+          fulfil(true)
+        }
+      });
+    })
   }
 
-  async deleteUser(user: User) {}
+  async deleteUser(user: DocumentType<User>): Promise<boolean> {
+    return new Promise(function(fulfil, reject) {
+      user.deleteOne(null, (err, res) => {
+        fulfil(!err);
+      });
+    })
+  }
 
-  //TODO: Implement all User-related database operations to implement authentication
-  // 1. implement getUser() function
-  // 2. finish UsersService
-  // 3. implement authentication strategy
-  async getUser(query: FilterQuery<User>) {
-      return await this.userRepository.findOne(query)
+  async findUsers(query: FilterQuery<User>): Promise<DocumentType<User>[]> {
+    const bookM = this.userModel;
+    return new Promise(function(fulfil, reject) {
+      bookM.find(query).exec().then( (res) => {
+          if(res){
+            fulfil(res)
+          } else {
+            fulfil(null)
+          }
+        }
+      )
+    })
+  }
+
+  async findUser(query: FilterQuery<User>): Promise<DocumentType<User>> {
+    const bookM = this.userModel;
+    return new Promise(function(fulfil, reject) {
+      bookM.findOne(query).exec().then( (res) => {
+          if(res){
+            fulfil(res)
+          } else {
+            fulfil(null)
+          }
+        }
+      )
+    })
   }
 }

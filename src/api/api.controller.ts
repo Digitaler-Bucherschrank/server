@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Request, UseGuards } from "@nestjs/common";
 import { UserDbService } from "../database/services/user.db.service";
 import { BookDbService } from "../database/services/book.db.service";
 import { Book } from "src/database/entities/Book";
@@ -17,41 +17,37 @@ export class ApiController {
 
 
   //TODO: add Validation of User
-  @Post('register')
+  @Post("register")
   async addUser(@Body() createUser: User): Promise<boolean> {
-    let res = this.userdbService.insertUser(this.userdbService.getUserRepository().create({
-      username: createUser.username,
-      mail: createUser.mail,
-      passwordhash: createUser.hash,
-      createdAt: new Date()
-    }))
+    let res = await this.userdbService.insertUser(createUser);
 
-    return res
+    if(res){
+      return res
+    } else {
+      throw new HttpException("incomplete_user_data", HttpStatus.BAD_REQUEST);
+    }
 
   }
 
-  @Get('searchBook')
-  async searchBook(@Body() createBook: Book) {
-    return this.bookdbService.getBooks( {  gbookid: createBook.gbookid,
-      donor: createBook.donor});
+  @Get("searchBook")
+  async searchBook(@Body() createBook: Body) {
+    return this.bookdbService.findBooks(createBook);
   }
 
   @UseGuards(JwtAccessAuthGuard)
-  @Post('addBook')
+  @Post("addBook")
   async addBook(@Body() createBook: Book): Promise<boolean> {
-    let res = this.bookdbService.insertBook(this.bookdbService.getBookRepository().create({
-      gbookid: createBook.gbookid,
-      donor: createBook.donor,
-      // location: "",
-      createdAt: new Date()
-    }))
+    let res = await this.bookdbService.insertBook(createBook);
 
-    return res
-
+    if(res){
+      return res
+    } else {
+      throw new HttpException("incomplete_book_data", HttpStatus.BAD_REQUEST);
+    }
   }
 
   @UseGuards(JwtRefreshAuthGuard)
-  @Post('refresh')
+  @Post("refresh")
   async getRefreshToken(@Request() req) {
     return await this.authService.refreshTokens(req.user);
   }

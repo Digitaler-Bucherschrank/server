@@ -1,54 +1,59 @@
-import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
-import { ObjectId } from "@mikro-orm/mongodb";
 import { Book } from "./Book";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { Types } from "mongoose";
 
-@Entity()
-export class BookCase {
-    @PrimaryKey()
-    _id: ObjectId;
 
-    @Property()
-    address!: string;
+@modelOptions({ schemaOptions: { collection: "bookshelfs" } })
+export class BookCase implements Base {
+  _id: Types.ObjectId;
+  id: string;
 
-    @Property()
-    bcz?: string;
+  @prop()
+  address!: string;
 
-    @Property()
-    comment?: string;
+  @prop()
+  bcz?: string;
 
-    @Property()
-    contact!: string;
+  @prop()
+  comment?: string;
 
-    @Property()
-    deactivated?: Boolean;
+  @prop()
+  contact!: string;
 
-    @Property()
-    deactreason?: string;
+  @prop()
+  deactivated?: Boolean;
 
-    @Property()
-    digital?: boolean;
+  @prop()
+  deactreason?: string;
 
-    @Property()
-    entrytype?: string;
+  @prop()
+  digital?: boolean;
 
-    @Property()
-    homepage?: string;
+  @prop()
+  entrytype?: string;
 
-    @Property()
-    lat!: string;
+  @prop()
+  homepage?: string;
 
-    @Property()
-    long!: string;
+  @prop()
+  lat!: string;
 
-    @Property()
-    open?: string;
+  @prop()
+  long!: string;
 
-    @Property()
-    title!: string;
+  @prop()
+  open?: string;
 
-    @Property()
-    type?: string;
+  @prop()
+  title!: string;
 
-    @OneToMany('Book', 'location')
-    books!: Book[]
+  @prop()
+  type?: string;
+
+  @prop({ ref: () => Book })
+  books!: Ref<Book>[];
+
+  @prop()
+  updatedAt!: Date;
 }

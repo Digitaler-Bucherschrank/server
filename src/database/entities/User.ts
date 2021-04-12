@@ -1,33 +1,49 @@
-import { Collection, Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { ObjectId } from "@mikro-orm/mongodb";
 import { Book } from "./Book";
+import { DocumentType, modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+import { Types } from "mongoose";
 
-@Entity()
-export class User {
-    @PrimaryKey()
-    _id: ObjectId;
+@modelOptions({ schemaOptions: { collection: "users" , timestamps: true} })
+export class User implements Base {
 
-    @Property()
-    username!: string
+  public static createUser(userDTO: Object): User{
+    let user = new User();
 
-    @Property()
-    mail!: string
+    Object.keys(userDTO).forEach(function(key,index) {
+      user[key] = userDTO[key]
+    });
 
-    @Property()
-    hash?: string
+    return user
+  }
 
-    @Property()
-    tokens!: {client: string, accessToken: { token: string, iat: string }, refreshToken: { token: string, iat: string }}[]
+  _id: Types.ObjectId;
+  id: string;
 
-    // Not actually a database property, just for basic sessions tracking
-    client_id?: string
+  @prop({ unique: true })
+  username!: string;
 
-    @ManyToOne(() => Book)
-    borrowedBooks? = new Collection<Book>(this)
+  @prop({ unique: true })
+  mail!: string;
 
-    @ManyToOne(() => Book)
-    donatedBooks? = new Collection<Book>(this)
+  @prop()
+  hash!: string;
 
-    @Property()
-    createdAt!: Date
+  @prop()
+  tokens!: { client: string, accessToken: { token: string, iat: string }, refreshToken: { token: string, iat: string } }[];
+
+  // Not actually a database property, just for basic sessions tracking
+  client_id?: string;
+
+  @prop({ ref: () => Book })
+  borrowedBooks?: Ref<Book>[];
+
+  @prop({ ref: () => Book })
+  donatedBooks?: Ref<Book>[];
+
+  @prop()
+  createdAt!: Date;
+
+  @prop()
+  updatedAt!: Date;
+
 }

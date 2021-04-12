@@ -3,10 +3,12 @@ import { UserDbService } from "../database/services/user.db.service";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "../database/entities/User";
 import * as bcrypt from "bcrypt";
+import { DocumentType } from "@typegoose/typegoose";
 
 @Injectable()
 export class AuthService {
-  constructor(private userDBService: UserDbService, private jwtService: JwtService){}
+  constructor(private userDBService: UserDbService, private jwtService: JwtService) {
+  }
 
   /**
    * Checks for
@@ -18,21 +20,21 @@ export class AuthService {
    * @param pass
    * @param client_id
    */
-    async validateUser(username: string, pass: string, client_id: string): Promise<User | string> {
-      const user = await this.userDBService.getUser({ username: username });
-      if(!user.tokens?.some(e => e.client === client_id)){
-        return new Promise(function(fulfil, reject) {
-          bcrypt.compare(pass, user.hash, function(err, result) {
-            if (result == true) {
-              user.client_id = client_id
-              fulfil(user);
-            }
-            reject(null)
-          });
-        })
-      } else {
-        return "client_id_already_used"
-      }
+  async validateUser(username: string, pass: string, client_id: string): Promise<User | string> {
+    const user = await this.userDBService.findUser({ username: username });
+    if (!user.tokens?.some(e => e.client === client_id)) {
+      return new Promise(function(fulfil, reject) {
+        bcrypt.compare(pass, user.hash, function(err, result) {
+          if (result == true) {
+            user.client_id = client_id;
+            fulfil(user);
+          }
+          reject(null);
+        });
+      });
+    } else {
+      return "client_id_already_used";
+    }
   }
 
 
@@ -41,22 +43,22 @@ export class AuthService {
   */
   async login(user: User) {
     let tokens = {
-      access_token: this.jwtService.sign({ id: user._id.toHexString(), cli: user.client_id}),
-      refresh_token: this.jwtService.sign({ id: user._id.toHexString(), cli: user.client_id}, {
+      access_token: this.jwtService.sign({ id: user._id.toHexString(), cli: user.client_id }),
+      refresh_token: this.jwtService.sign({ id: user._id.toHexString(), cli: user.client_id }, {
         expiresIn: "60d",
         audience: "refresh"
       })
-    }
+    };
 
-    let decrypted_at = <{[key:string]: any}>this.jwtService.decode(tokens.access_token, {
+    let decrypted_at = <{ [key: string]: any }>this.jwtService.decode(tokens.access_token, {
       json: true,
       complete: false
-    })
+    });
 
-    let decrypted_rt = <{[key:string]: any}>this.jwtService.decode(tokens.refresh_token, {
+    let decrypted_rt = <{ [key: string]: any }>this.jwtService.decode(tokens.refresh_token, {
       json: true,
       complete: false
-    })
+    });
 
     user.tokens.push({
       client: user.client_id, accessToken: {
@@ -66,9 +68,9 @@ export class AuthService {
         token: tokens.refresh_token,
         iat: decrypted_rt.iat
       }
-    })
+    });
 
-    await this.userDBService.getUserRepository().persistAndFlush(user);
+    await (user as DocumentType<User>).save()
     return tokens;
   }
 
