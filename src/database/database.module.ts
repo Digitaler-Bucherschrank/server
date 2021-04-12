@@ -4,10 +4,10 @@ import { BookDbService } from "./services/book.db.service";
 import { LogEntryDbService } from "./services/log-entry.db.service";
 import { UserDbService } from "./services/user.db.service";
 import { TypegooseModule } from "nestjs-typegoose";
-import { Book } from "./entities/Book";
-import { BookCase } from "./entities/BookCase";
-import { User } from "./entities/User";
-import { LogEntry } from "./entities/LogEntry";
+import { Book } from "./schemas/Book";
+import { BookCase } from "./schemas/BookCase";
+import { User } from "./schemas/User";
+import { LogEntry } from "./schemas/LogEntry";
 
 
 @Module({

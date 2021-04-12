@@ -8,7 +8,7 @@ export class LogEntry implements Base {
   _id: Types.ObjectId;
   id: string;
 
-  @prop()
+  @prop({required:true})
   timestamp!: Date;
 
   @prop()
