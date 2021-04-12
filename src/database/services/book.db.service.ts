@@ -16,14 +16,14 @@ export class BookDbService {
     return this.bookModel
   }
 
-  async insertBook(book: Book): Promise<boolean> {
+  async insertBook(book: Book): Promise<Book | boolean> {
     const gg = new this.bookModel(book)
     return new Promise(function(fulfil, reject) {
       gg.save(null, (err, res) => {
         if(err){
           fulfil(false)
         } else {
-          fulfil(true)
+          fulfil(gg)
         }
       });
     })
