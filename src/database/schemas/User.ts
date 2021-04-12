@@ -35,10 +35,10 @@ export class User implements Base {
   client_id?: string;
 
   @prop({ ref: () => Book , default: []})
-  borrowedBooks?: Ref<Book>[];
+  borrowedBooks!: Ref<Book>[];
 
   @prop({ ref: () => Book , default: []})
-  donatedBooks?: Ref<Book>[];
+  donatedBooks!: Ref<Book>[];
 
   @prop()
   createdAt!: Date;

@@ -1,7 +1,7 @@
 import { BookCase } from "./BookCase";
 import { User } from "./User";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
-import { modelOptions, prop } from "@typegoose/typegoose";
+import { modelOptions, prop, Ref } from "@typegoose/typegoose";
 import { Types } from "mongoose";
 
 @modelOptions({ schemaOptions: { collection: "books", timestamps: true } })
@@ -30,10 +30,10 @@ export class Book implements Base {
   title!: string;
 
   @prop({ ref: () => User , required: true})
-  donor!: User;
+  donor!: Ref<Book>;
 
   @prop({ ref: () => BookCase , required: true})
-  location!: BookCase;
+  location!: Ref<BookCase>;
 
   @prop()
   createdAt!: Date;
