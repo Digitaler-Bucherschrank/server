@@ -1,26 +1,43 @@
-import { Entity, ManyToOne, OneToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { ObjectId } from "@mikro-orm/mongodb";
 import { BookCase } from "./BookCase";
 import { User } from "./User";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+import { modelOptions, prop } from "@typegoose/typegoose";
+import { Types } from "mongoose";
 
-@Entity()
-export class Book {
-    @PrimaryKey()
-    _id: ObjectId;
+@modelOptions({ schemaOptions: { collection: "books", timestamps: true } })
+export class Book implements Base {
 
-    @Property()
-    gbookid!: string;
+  public static createBook(bookDTO: Object): User{
+    let user = new User();
 
-    @Property()
-    author!: string;
+    Object.keys(bookDTO).forEach(function(key,index) {
+      user[key] = bookDTO[key]
+    });
 
-    @Property()
-    title!: string;
+    return user
+  }
 
-    @OneToOne(() => User)
-    donor: User;
+  _id: Types.ObjectId;
+  id: string;
 
-    @ManyToOne()
-    location!: BookCase;
+  @prop({required:true})
+  gbookid!: string;
 
+  @prop({required:true})
+  author!: string;
+
+  @prop({required:true})
+  title!: string;
+
+  @prop({ ref: () => User , required: true})
+  donor!: User;
+
+  @prop({ ref: () => BookCase , required: true})
+  location!: BookCase;
+
+  @prop()
+  createdAt!: Date;
+
+  @prop()
+  updatedAt!: Date;
 }

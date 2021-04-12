@@ -38,3 +38,5 @@ src/config.ts
 
 # Cache
 api_cache
+
+package-lock.json

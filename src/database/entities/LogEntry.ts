@@ -1,18 +1,19 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { ObjectId } from "@mikro-orm/mongodb";
 import { User } from "./User";
+import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+import { Types } from "mongoose";
 
-@Entity()
-export class LogEntry {
-    @PrimaryKey()
-    _id: ObjectId;
+@modelOptions({ schemaOptions: { collection: "logs" } })
+export class LogEntry implements Base {
+  _id: Types.ObjectId;
+  id: string;
 
-    @Property()
-    timestamp: Date
+  @prop()
+  timestamp!: Date;
 
-    @Property()
-    ip_address: string;
+  @prop()
+  ip_address?: string;
 
-    @ManyToOne()
-    user: User;
+  @prop({ ref: () => User })
+  user!: Ref<User>;
 }
