@@ -32,7 +32,7 @@ export class User implements Base {
   tokens!: { client: string, accessToken: { token: string, iat: string }, refreshToken: { token: string, iat: string } }[];
 
   // Not actually a database property, just for basic sessions tracking
-  client_id?: string;
+  client_id?: string
 
   @prop({ ref: () => Book , default: []})
   borrowedBooks!: Ref<Book>[];
