@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { UserDbService } from "../database/services/user.db.service";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "../database/schemas/User";
@@ -86,6 +86,21 @@ export class AuthService {
 
   // TODO: Logout route ==> delete access/refresh token pair
   async logout(user) {
-    return Promise.resolve(undefined);
+    let token_pair = user.tokens.find(x => x.client == user.client_id);
+
+    if (token_pair != undefined) {
+        user.tokens = user.tokens.filter(item => item !== token_pair)
+        return await new Promise(function(fulfil, reject) {
+            (user as DocumentType<User>).save(null, (err, res) => {
+              if (err) {
+                fulfil(false)
+              } else {
+                fulfil(true)
+              }
+            })
+          })
+    } else {
+      throw new HttpException("client_already_logged_out", HttpStatus.BAD_REQUEST);
+    }
   }
 }

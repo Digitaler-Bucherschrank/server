@@ -13,9 +13,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwtAccess") {
       ignoreExpiration: false,
       secretOrKey: Config.secret,
       audience: "access"
-    } /* function(payload: any, done: VerifiedCallback){
-      console.log(done)
-    } */);
+    });
   }
 
 
@@ -25,19 +23,20 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwtAccess") {
     });
 
     if (user == undefined) {
-      throw new HttpException("user_not_found", HttpStatus.UNAUTHORIZED);
+      throw "user_not_found"
     }
 
     let token_pair = user.tokens.find(x => x.client == payload.cli);
 
     if (token_pair == undefined) {
-      throw new HttpException("client_not_found", HttpStatus.UNAUTHORIZED);
+      throw "client_not_found"
     }
 
     if (token_pair.refreshToken.iat == payload.iat) {
+      user.client_id = token_pair.client
       return user;
     } else {
-      throw new HttpException("access_token_outdated", HttpStatus.UNAUTHORIZED);
+      throw "access_token_outdated"
     }
 
   }
