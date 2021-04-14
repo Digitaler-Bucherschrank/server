@@ -12,14 +12,14 @@ export class BookCaseDbService {
   ) {
   }
 
-  async insertBookCase(bookCase: BookCase): Promise<boolean> {
+  async insertBookCase(bookCase: BookCase): Promise<boolean | BookCase> {
     const gg = new this.bookCaseModel(bookCase)
     return new Promise(function(fulfil, reject) {
       gg.save(null, (err, res) => {
         if(err){
-          throw new HttpException("incomplete_data", HttpStatus.BAD_REQUEST);
+         fulfil(false)
         } else {
-          fulfil(true)
+          fulfil(gg)
         }
       });
     })
