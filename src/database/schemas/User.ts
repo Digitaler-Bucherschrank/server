@@ -2,7 +2,9 @@ import { Book } from "./Book";
 import { DocumentType, modelOptions, prop, Ref } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import { Types } from "mongoose";
+import validator from 'validator';
 
+// TODO: optional custom error messages for validation
 @modelOptions({ schemaOptions: { collection: "users" , timestamps: true} })
 export class User implements Base {
 
@@ -19,10 +21,10 @@ export class User implements Base {
   _id: Types.ObjectId;
   id: string;
 
-  @prop({ unique: true , required: true})
+  @prop({ unique: true , required: true, minlength: 6, maxlength: 14, match: /^[a-z0-9_-]{5,14}$/})
   username!: string;
 
-  @prop({ unique: true , required: true})
+  @prop({ unique: true , required: true, validate: [validator.isEmail()]})
   mail!: string;
 
   @prop({required: true})
