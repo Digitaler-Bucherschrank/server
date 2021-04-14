@@ -1,8 +1,9 @@
-import { CACHE_MANAGER, HttpService, Inject, Injectable } from "@nestjs/common";
+import { CACHE_MANAGER, HttpService, Inject, Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { GoogleBook } from "../entities/GoogleBook";
 import axios from "axios";
 import { Config } from "../../config";
+import { isNullOrUndefined } from "@typegoose/typegoose/lib/internal/utils";
 
 //TODO: Bücher mit ISBN suchen lassen
 @Injectable()
@@ -46,13 +47,19 @@ export class GBookFetcherService {
     let promises: Promise<any>[] = [];
     ids.forEach((e, i) => {
       if (cache[i] == undefined) {
-        promises.push(this.httpService.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${e}`).toPromise());
-      }
+        promises.push(this.httpService.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:%20${e}`).toPromise());
+        }
     });
+   
+    
     return await axios.all(promises).then(axios.spread(async (...responses) => {
       let index = 0;
       for (let i in cache) {
         if (cache[i] == null) {
+          if (isNullOrUndefined(responses[index].data.items)) {
+            throw new HttpException("no_book_found", HttpStatus.BAD_REQUEST);
+          }
+          
           cache[i] = responses[index].data.items[0];
           await this.cacheManager.set(responses[index].data.items[0].id, responses[index].data.items[0]);
           index++;
