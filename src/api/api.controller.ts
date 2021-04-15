@@ -16,7 +16,7 @@ import { BookCase } from "src/database/schemas/BookCase";
 import { isNullOrUndefined } from "@typegoose/typegoose/lib/internal/utils";
 
 @Controller("api")
-// TODO: /borrowbook /searchBookbyGbookid finish /searchbyISBN complete /getbookcaseinventory /getuserinventory /addbook complete /searchbook (ersten ) complete
+// TODO: /borrowbook /searchBookby Gbookid finish /searchbyISBN complete /getbookcaseinventory /getuserinventory /addbook complete /searchbook (ersten ) complete
 
 export class ApiController {
   constructor(private authService: AuthService,
@@ -63,15 +63,14 @@ export class ApiController {
     book.title = data[0].volumeInfo.title
     book.subtitle = data[0].volumeInfo.subtitle
   
-    var thumbnail 
+    
     //Lösung benötigt eventuell überarbeitung
-    if (isNullOrUndefined(data[0].volumeInfo.imageLinks)==true) {
-     thumbnail == null;
+    if (isNullOrUndefined(data[0].volumeInfo.imageLinks)==false) {
+      book.thumbnail=data[0].volumeInfo.imageLinks.thumbnail 
     }
-    else {
-      data[0].volumeInfo.imageLinks.thumbnail = thumbnail
-    }
-    book.thumbnail = thumbnail
+    
+    
+    
     book.donor = req.user
     book.location = Info.location
     let res = await this.bookdbService.insertBook(book);
