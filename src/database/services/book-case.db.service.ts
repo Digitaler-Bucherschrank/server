@@ -15,11 +15,11 @@ export class BookCaseDbService {
   async insertBookCase(bookCase: BookCase): Promise<boolean> {
     const gg = new this.bookCaseModel(bookCase)
     return new Promise(function(fulfil, reject) {
-      gg.save(null, (err, res) => {
-        if(err){
+      gg.save({ validateBeforeSave: true }, (err, res) => {
+        if (err) {
           throw new HttpException("incomplete_data", HttpStatus.BAD_REQUEST);
         } else {
-          fulfil(true)
+          fulfil(true);
         }
       });
     })

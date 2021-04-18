@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Config } from "../../config";
 import { UserDbService } from "../../database/services/user.db.service";
 
@@ -11,7 +11,8 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwtRefresh")
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: Config.secret,
-      audience: "refresh"
+      audience: "refresh",
+      passReqToCallback: true
     });
   }
 
@@ -25,11 +26,21 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwtRefresh")
       _id: payload.id
     });
 
+    if (user == undefined) {
+      throw "user_not_found";
+    }
+
     let token_pair = user.tokens.find(x => x.client == payload.cli);
+
+    if (token_pair == undefined) {
+      throw "client_not_found";
+    }
+
     if (token_pair.refreshToken.iat == payload.iat) {
       return payload;
     } else {
-      throw new HttpException("refresh_token_outdated", HttpStatus.UNAUTHORIZED);
+      // TODO: Maybe logout on all devices? ==> Obvious sign for a compromise of user data
+      throw "refresh_token_inactive";
     }
 
   }

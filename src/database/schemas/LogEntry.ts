@@ -3,7 +3,7 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import { Types } from "mongoose";
 
-@modelOptions({ schemaOptions: { collection: "logs" } })
+@modelOptions({ schemaOptions: { collection: "logs", validateBeforeSave: false } })
 export class LogEntry implements Base {
   _id: Types.ObjectId;
   id: string;

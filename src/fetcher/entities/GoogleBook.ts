@@ -1,7 +1,5 @@
 export interface GoogleBook {
-  "kind": "books#volume",
   "id": String,
-  "etag": String,
   "selfLink": String,
   "volumeInfo": {
     "title": String,
@@ -21,10 +19,7 @@ export interface GoogleBook {
     "ratingsCount": Number,
     "contentVersion": String,
     "imageLinks": {
-      "smallThumbnail": String,
       "thumbnail": String,
-      "small": String,
-      "medium": String,
       "large": String,
       "extraLarge": String
     },
@@ -32,5 +27,5 @@ export interface GoogleBook {
     "previewLink": String,
     "infoLink": String,
     "canonicalVolumeLink": String
-  },
+  }
 }
