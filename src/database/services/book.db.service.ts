@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Book } from "../schemas/Book";
 import { InjectModel } from "nestjs-typegoose";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
@@ -19,11 +19,11 @@ export class BookDbService {
   async insertBook(book: Book): Promise<Book | boolean> {
     const gg = new this.bookModel(book)
     return new Promise(function(fulfil, reject) {
-      gg.save(null, (err, res) => {
-        if(err){
-          fulfil(false)
+      gg.save({ validateBeforeSave: true }, (err, res) => {
+        if (err) {
+          fulfil(false);
         } else {
-          fulfil(gg)
+          fulfil(gg);
         }
       });
     })

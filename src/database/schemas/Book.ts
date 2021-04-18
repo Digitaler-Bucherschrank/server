@@ -4,7 +4,7 @@ import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import { modelOptions, prop, Ref } from "@typegoose/typegoose";
 import { Types } from "mongoose";
 
-@modelOptions({ schemaOptions: { collection: "books", timestamps: true } })
+@modelOptions({ schemaOptions: { collection: "books", timestamps: true, validateBeforeSave: false } })
 export class Book implements Base {
 
   public static createBook(bookDTO: Object): User{
@@ -20,23 +20,26 @@ export class Book implements Base {
   _id: Types.ObjectId;
   id: string;
 
-  @prop({required:true})
+  @prop({ required: true })
   gbookid!: string;
 
-  @prop({required:true})
+  @prop({ required: true })
   author!: string;
 
-  @prop({required:true})
+  @prop({ required: true })
   title!: string;
 
-  @prop({ ref: () => User , required: true})
-  donor!: Ref<Book>;
+  @prop({ ref: () => User, required: true })
+  donor!: Ref<User>;
 
-  @prop({ ref: () => BookCase , required: true})
+  @prop({ ref: () => BookCase, required: true })
   location!: Ref<BookCase>;
 
   @prop()
   createdAt!: Date;
+
+  @prop()
+  thumbnail!: String;
 
   @prop()
   updatedAt!: Date;

@@ -4,7 +4,7 @@ import { modelOptions, prop, Ref } from "@typegoose/typegoose";
 import { Types } from "mongoose";
 
 
-@modelOptions({ schemaOptions: { collection: "bookshelfs" } })
+@modelOptions({ schemaOptions: { collection: "bookshelfs", validateBeforeSave: false } })
 export class BookCase implements Base {
   _id: Types.ObjectId;
   id: string;
