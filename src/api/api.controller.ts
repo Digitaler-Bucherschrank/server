@@ -16,6 +16,7 @@ import { BookCase } from "src/database/schemas/BookCase";
 import { isNullOrUndefined } from "@typegoose/typegoose/lib/internal/utils";
 import { info } from "node:console";
 import { start } from "node:repl";
+import { Types } from "mongoose";
 
 @Controller("api")
 // TODO: /return book book /searchbook (beschränkt)  //Problem with unknown ids!!
@@ -65,15 +66,20 @@ export class ApiController {
   }
 
   @Get("searchBookCase") //problem with unknown bookcase id!
-    async searchBookCase(@Body() createBookCase: Body) {
-    let res = await this.bookcasedbService.findBookCases(createBookCase);
+     async searchBookCase(@Body() createBookCase:BookCase) {
+ 
+  
+ if (Types.ObjectId.isValid(createBookCase._id)||isNullOrUndefined(createBookCase._id)==true) {
+  let res = await this.bookcasedbService.findBookCases(createBookCase);
     if(isNullOrUndefined(res[0])==false) {
       return res
     } 
     else {
       throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
     } 
-  }
+  } else {
+    throw new HttpException("non_valid_bookcase_id", HttpStatus.BAD_REQUEST);
+  } }
 
 @UseGuards(JwtAccessAuthGuard)
 @Get("UserborrowedBooks") 
@@ -90,13 +96,16 @@ user._id=req.user
 return (await this.userdbService.findUser(user)).donatedBooks;
 }
 @Get("BookCaseInventory") //problem with unknown bookcase id!
-async BookCaseInventory(@Body() createBookCase: Body){
+async BookCaseInventory(@Body() createBookCase: BookCase){
+if (Types.ObjectId.isValid(createBookCase._id)||isNullOrUndefined(createBookCase._id)==true) {
 let res = await this.bookcasedbService.findBookCase(createBookCase)
 if(isNullOrUndefined(res)==false) {
   return res.inventory
 } 
 else {
   throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
+}} else {
+  throw new HttpException("non_valid_bookcase_id", HttpStatus.BAD_REQUEST);
 }
 }
 
@@ -110,7 +119,7 @@ else {
     book.author = data[0].volumeInfo.authors[0]
     book.title = data[0].volumeInfo.title
     book.subtitle = data[0].volumeInfo.subtitle
-  
+    
     
     //Solution may need further consideration
     if (isNullOrUndefined(data[0].volumeInfo.imageLinks)==false) {
@@ -121,6 +130,9 @@ else {
     
     book.donor = req.user
     book.location = Info.location
+    book.addedmanual = false
+    book.borrowed = false
+    if (Types.ObjectId.isValid(Info.location)){
     let res = await this.bookdbService.insertBook(book);
     let varbookcase = new BookCase;
     varbookcase._id = Info.location
@@ -129,6 +141,8 @@ else {
     if(!res){
       throw new HttpException("incomplete_book_data", HttpStatus.BAD_REQUEST);
     } else {
+      if(!bookcase){throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);}
+      else{
       (req.user as DocumentType<User>).donatedBooks.push(<Book>res);
       (bookcase as DocumentType<BookCase>).inventory.push(<Book>res);
       return new Promise(function(fulfil, reject) {
@@ -147,11 +161,14 @@ else {
         });
       })
     }
-  }
+  }}else{
+    throw new HttpException("non_valid_bookcase_id", HttpStatus.BAD_REQUEST);
+  }}
 
   @UseGuards(JwtAccessAuthGuard)
   @Post("borrowBook") 
 async borrowBook(@Body() Info, @Request() req){
+  
   let book = new Book 
   let start;
   book._id = Info._id
@@ -159,6 +176,7 @@ async borrowBook(@Body() Info, @Request() req){
   if(!bookc){
     throw new HttpException("error_book_not_found", HttpStatus.BAD_REQUEST); //needs further specification
   }
+
   let varbookcase = new BookCase;
     varbookcase._id = Info.location
   let bookcase = await this.bookcasedbService.findBookCase(varbookcase);
@@ -276,32 +294,39 @@ if(!user){
     @Post("donateBookmanual") 
   async donateBookmanual(@Body() createBook, @Request() req){ 
     createBook.donor = req.user
-    let res = await this.bookdbService.insertBook(createBook);
-    let varbookcase = new BookCase;
-    varbookcase._id = createBook.location
-    let bookcase = await this.bookcasedbService.findBookCase(varbookcase);
-    
-    if(!res){
-      throw new HttpException("incomplete_book_data", HttpStatus.BAD_REQUEST);
-    } else {
-      (req.user as DocumentType<User>).donatedBooks.push(<Book>res);
-      (bookcase as DocumentType<BookCase>).inventory.push(<Book>res);
-      return new Promise(function(fulfil, reject) {
-        (bookcase as DocumentType<BookCase>).save(null, (err, res) => {
-          if(err){
-            fulfil(false)
-          } else {
-            
-              (req.user as DocumentType<User>).save(null, (err, res) => {
-                if(err){
-                  fulfil(false)
-                } else {
-                  fulfil(true)
-                }
-              });
-          }
-        });
-      })
+    createBook.addedmanual = true
+    createBook.borrowed = false
+    if (Types.ObjectId.isValid(createBook.location)){
+      let res = await this.bookdbService.insertBook(createBook);
+      let varbookcase = new BookCase;
+      varbookcase._id = createBook.location
+      let bookcase = await this.bookcasedbService.findBookCase(varbookcase);
+      
+      if(!res){
+        throw new HttpException("incomplete_book_data", HttpStatus.BAD_REQUEST);
+      } else {
+        if(!bookcase){throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);}
+        else{
+        (req.user as DocumentType<User>).donatedBooks.push(<Book>res);
+        (bookcase as DocumentType<BookCase>).inventory.push(<Book>res);
+        return new Promise(function(fulfil, reject) {
+          (bookcase as DocumentType<BookCase>).save(null, (err, res) => {
+            if(err){
+              fulfil(false)
+            } else {
+                (req.user as DocumentType<User>).save(null, (err, res) => {
+                  if(err){
+                    fulfil(false)
+                  } else {
+                    fulfil(true)
+                  }
+                });
+            }
+          });
+        })
+      }
+    }}else{
+      throw new HttpException("non_valid_bookcase_id", HttpStatus.BAD_REQUEST);
     }
   }
   //Just for testing:

@@ -23,11 +23,17 @@ export class Book implements Base {
   @prop({ required: true })
   gbookid!: string;
 
-  @prop({ required: true })
-  author!: string;
+  @prop({required:false})
+  ISBN!: string;
+  
+  @prop({required:true})
+  addedmanual!: boolean;
 
   @prop({required:true})
-  ISBN!: string;
+  borrowed!: boolean;
+  
+  @prop({required:true})
+  author!: string;
 
   @prop({ required: true })
   title!: string;

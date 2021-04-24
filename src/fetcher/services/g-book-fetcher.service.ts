@@ -11,6 +11,7 @@ export class GBookFetcherService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache, private httpService: HttpService) {
   }
 
+  // Currently not needed as we only do caching by ISBN
   async getBookInformation(ids: string[]): Promise<GoogleBook[]> {
     let cache: GoogleBook[] = await this.checkIfInCache(ids);
     let promises: Promise<any>[] = [];
