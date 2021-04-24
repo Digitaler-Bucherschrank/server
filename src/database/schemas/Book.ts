@@ -19,8 +19,8 @@ export class Book implements Base {
 
   _id: Types.ObjectId;
   id: string;
-
-  @prop({required:true})
+ //2 possibilities: gbookid required -> /donateBookmanual createbook.gbookid === null 
+  @prop({required:false})
   gbookid!: string;
   
   @prop({required:true})
