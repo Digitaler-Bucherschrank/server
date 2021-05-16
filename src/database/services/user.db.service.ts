@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { User } from "../schemas/User";
 import { InjectModel } from "nestjs-typegoose";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
-import { FilterQuery } from "mongoose";
+import { Error, FilterQuery } from "mongoose";
 
 @Injectable()
 /**
@@ -21,15 +21,54 @@ export class UserDbService {
     return this.userModel
   }
 
-  async insertUser(user: User): Promise<boolean> {
+  async insertUser(user: User): Promise<String> {
     const gg = new this.userModel(user)
 
     return new Promise(function(fulfil, reject) {
-      gg.save({ validateBeforeSave: true }, (err, res) => {
+      gg.save({ validateBeforeSave: true }, (err: Error.ValidationError, res) => {
         if (err) {
-          throw new HttpException("incomplete_data", HttpStatus.BAD_REQUEST);
+          for(let i in err.errors){
+            let error = err.errors[i]
+              switch(error.path){
+                case("username"): {
+                  switch(error.kind){
+                    case("minlength"):{
+                      fulfil("username_too_short");
+                      break;
+                    }
+
+                    case("maxlength"):{
+                      fulfil("username_too_long");
+                      break;
+                    }
+
+                    case("regexp"):{
+                      fulfil("invalid_username");
+                      break;
+                    }
+                  }
+                  break;
+                }
+
+                case("mail"):{
+                  fulfil("invalid_mail");
+                  break;
+                }
+              }
+          }
+
+          // We are assuming that if it isn't a validation error it must be a MongoError
+          switch((err as any).code){
+            // Dirty hack but who cares
+            case(11000):{
+              fulfil(`${Object.keys((err as any).keyPattern)[0]}_taken`);
+              break;
+            }
+          }
+          // TODO: Error handling for duplicate Username, Email
+          fulfil("error")
         } else {
-          fulfil(true);
+          fulfil("successful");
         }
       });
     })

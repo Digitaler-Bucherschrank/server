@@ -22,18 +22,22 @@ export class AuthService {
    */
   async validateUser(username: string, pass: string, client_id: string): Promise<User | string> {
     const user = await this.userDBService.findUser({ username: username });
-    if (!user.tokens?.some(e => e.client === client_id)) {
-      return new Promise(function(fulfil, reject) {
-        bcrypt.compare(pass, user.hash, function(err, result) {
-          if (result == true) {
-            user.client_id = client_id;
-            fulfil(user);
-          }
-          reject(null);
+    if(user != null){
+      if (!user.tokens?.some(e => e.client === client_id)) {
+        return new Promise(function(fulfil, reject) {
+          bcrypt.compare(pass, user.hash, function(err, result) {
+            if (result == true) {
+              user.client_id = client_id;
+              fulfil(user);
+            }
+            reject(null);
+          });
         });
-      });
+      } else {
+        return "client_id_already_used";
+      }
     } else {
-      return "client_id_already_used";
+      return null;
     }
   }
 
@@ -70,8 +74,20 @@ export class AuthService {
       }
     });
 
-    await (user as DocumentType<User>).save()
-    return tokens;
+    await (user as DocumentType<User>).save();
+    return {
+      id: user._id,
+      username: user.username,
+      tokens: {
+        accessToken: {
+          token: tokens.access_token,
+          iat: decrypted_at.iat
+        }, refreshToken: {
+          token: tokens.refresh_token,
+          iat: decrypted_rt.iat
+        }
+      }
+    };
   }
 
   async refreshTokens(payload) {
@@ -89,16 +105,16 @@ export class AuthService {
     let token_pair = user.tokens.find(x => x.client == user.client_id);
 
     if (token_pair != undefined) {
-        user.tokens = user.tokens.filter(item => item !== token_pair)
-        return await new Promise(function(fulfil, reject) {
-            (user as DocumentType<User>).save(null, (err, res) => {
-              if (err) {
-                fulfil(false)
-              } else {
-                fulfil(true)
-              }
-            })
-          })
+      user.tokens = user.tokens.filter(item => item !== token_pair);
+      return await new Promise(function(fulfil, reject) {
+        (user as DocumentType<User>).save(null, (err, res) => {
+          if (err) {
+            fulfil(false);
+          } else {
+            fulfil(true);
+          }
+        });
+      });
     } else {
       throw new HttpException("client_already_logged_out", HttpStatus.BAD_REQUEST);
     }

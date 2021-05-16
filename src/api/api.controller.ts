@@ -24,16 +24,22 @@ export class ApiController {
   }
 
 
-  @Post("register")
-  async addUser(@Body() createUser: User): Promise<boolean> {
+  @Post("signUp")
+  async addUser(@Body() createUser: User, @Request() req: Request): Promise<boolean> {
     let res = await this.userdbService.insertUser(createUser);
 
     if(res){
-      return res
-    } else {
-      throw new HttpException("incomplete_user_data", HttpStatus.BAD_REQUEST);
-    }
+      switch(res){
+        case("successful"):{
+          return true
+        }
 
+        // Check error messages in UserDBService
+        default: {
+          throw new HttpException(res, HttpStatus.BAD_REQUEST);
+        }
+      }
+    }
   }
 
   @Get("searchBook")

@@ -36,14 +36,13 @@ export class BookCaseDbService {
   async findBookCases(query: FilterQuery<User>): Promise<BookCase[]> {
     const bookM = this.bookCaseModel;
     return new Promise(function(fulfil, reject) {
-      bookM.find(query).exec().then( (res) => {
-          if(res){
-            fulfil(res)
-          } else {
-            fulfil(null)
-          }
+      bookM.find(query).exec((err, res) => {
+        if(err){
+          fulfil(res)
+        } else {
+          fulfil(null)
         }
-      )
+      })
     })
   }
 
