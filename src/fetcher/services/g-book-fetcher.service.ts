@@ -47,9 +47,10 @@ export class GBookFetcherService {
   async getBookByISBN(ids: string[]): Promise<GoogleBook[]> {
     let cache: GoogleBook[] = await this.checkIfInCache(ids);
     let promises: Promise<any>[] = [];
+    
     ids.forEach((e, i) => {
       if (cache[i] == undefined) {
-        promises.push(this.httpService.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:%20${e}`).toPromise());
+        promises.push(this.httpService.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${e}`).toPromise());
         }
     });
    
