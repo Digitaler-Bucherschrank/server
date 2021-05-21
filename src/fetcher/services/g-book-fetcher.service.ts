@@ -18,6 +18,7 @@ export class GBookFetcherService {
         promises.push(this.httpService.get(`https://www.googleapis.com/books/v1/volumes/${e}?key=${Config.api_key}`).toPromise());
       }
     });
+
     return await axios.all(promises).then(axios.spread(async (...responses) => {
       let index = 0;
       for (let i in cache) {
