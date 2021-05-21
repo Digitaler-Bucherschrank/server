@@ -11,6 +11,12 @@ export class BookCase implements Base {
 
   @prop()
   address!: string;
+  
+  @prop({ ref: () => Book , default: []})
+  inventory!: Ref<Book>[];
+  
+  @prop({required:true})
+  title!: string;
 
   @prop()
   bcz?: string;
@@ -45,14 +51,10 @@ export class BookCase implements Base {
   @prop()
   open?: string;
 
-  @prop()
-  title!: string;
+  
 
   @prop()
   type?: string;
-
-  @prop({ ref: () => Book })
-  books!: Ref<Book>[];
 
   @prop()
   updatedAt!: Date;

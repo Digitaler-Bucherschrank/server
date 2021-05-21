@@ -28,7 +28,7 @@ export class BookDbService {
       });
     })
   }
-
+  
   async deleteBook(book: DocumentType<Book>): Promise<boolean> {
     return new Promise(function(fulfil, reject) {
       book.deleteOne(null, (err, res) => {
@@ -37,14 +37,14 @@ export class BookDbService {
     })
   }
 
-  async findBooks(query: FilterQuery<User>): Promise<Book[]> {
+  async findBooks(query: FilterQuery<User>, test: number): Promise<Book[]> {
     const bookM = this.bookModel;
     return new Promise(function(fulfil, reject) {
-      bookM.find(query).exec().then( (res) => {
+      bookM.find(query).limit(test).exec().then( (res) => {
           if(res){
             fulfil(res)
           } else {
-            fulfil(null)
+            fulfil (null)
           }
         }
       )
