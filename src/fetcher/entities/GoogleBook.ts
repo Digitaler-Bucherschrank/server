@@ -1,31 +1,31 @@
 export interface GoogleBook {
-  "id": String,
-  "selfLink": String,
+  "id": string,
+  "selfLink": string,
   "volumeInfo": {
-    "title": String,
-    "subtitle": String,
+    "title": string,
+    "subtitle": string,
     "authors": [
-      String
+      string
     ],
-    "publisher": String,
-    "publishedDate": String,
-    "description": String,
+    "publisher": string,
+    "publishedDate": string,
+    "description": string,
     "pageCount": Number,
-    "mainCategory": String,
+    "mainCategory": string,
     "categories": [
-      String
+      string
     ],
     "averageRating": Number,
     "ratingsCount": Number,
-    "contentVersion": String,
+    "contentVersion": string,
     "imageLinks": {
-      "thumbnail": String,
-      "large": String,
-      "extraLarge": String
+      "thumbnail": string,
+      "large": string,
+      "extraLarge": string
     },
-    "language": String,
-    "previewLink": String,
-    "infoLink": String,
-    "canonicalVolumeLink": String
+    "language": string,
+    "previewLink": string,
+    "infoLink": string,
+    "canonicalVolumeLink": string
   }
 }

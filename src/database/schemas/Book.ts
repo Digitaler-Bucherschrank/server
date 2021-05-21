@@ -26,8 +26,14 @@ export class Book implements Base {
   @prop({ required: true })
   author!: string;
 
+  @prop({required:true})
+  ISBN!: string;
+
   @prop({ required: true })
   title!: string;
+  
+  @prop()
+  subtitle!: string;
 
   @prop({ ref: () => User, required: true })
   donor!: Ref<User>;
@@ -39,7 +45,7 @@ export class Book implements Base {
   createdAt!: Date;
 
   @prop()
-  thumbnail!: String;
+  thumbnail!: string;
 
   @prop()
   updatedAt!: Date;
