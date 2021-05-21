@@ -21,7 +21,7 @@ export class User implements Base {
   _id: Types.ObjectId;
   id: string;
 
-  @prop({ unique: true , required: true, minlength: 6, maxlength: 14, match: /^[a-z0-9_-]{5,14}$/})
+  @prop({ unique: true , required: true, minlength: 6, maxlength: 14, match: new RegExp(/^[a-z0-9_-]{5,14}$/, "i")})
   username!: string;
 
   @prop({ unique: true, required: true, validate: [validator.isEmail] })
