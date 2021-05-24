@@ -33,7 +33,7 @@ export class BookCaseDbService {
     })
   }
 
-  async findBookCases(query: FilterQuery<User>): Promise<BookCase[]> {
+  async findBookCases(query: FilterQuery<BookCase>): Promise<BookCase[]> {
     const bookM = this.bookCaseModel;
     return new Promise(function(fulfil, reject) {
       bookM.find(query).exec((err, res) => {
@@ -46,7 +46,7 @@ export class BookCaseDbService {
     })
   }
 
-  async findBookCase(query: FilterQuery<User>): Promise<BookCase> {
+  async findBookCase(query: FilterQuery<BookCase>): Promise<BookCase> {
     const bookM = this.bookCaseModel;
     return new Promise(function(fulfil, reject) {
       bookM.findOne(query).exec().then( (res) => {
@@ -57,6 +57,18 @@ export class BookCaseDbService {
           }
         }
       )
+    })
+  }
+
+    async updateBookCase(bookcase: DocumentType<BookCase>): Promise<boolean>{
+      return new Promise(function(fulfil, reject) {
+        bookcase.save(null, (err, res) => {
+          if (err) {
+            fulfil(false);
+          } else {
+            fulfil(true)
+          }
+        });
     })
   }
 }
