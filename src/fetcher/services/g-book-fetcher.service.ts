@@ -12,7 +12,7 @@ export class GBookFetcherService {
   }
 
   // Currently not needed as we only do caching by ISBN
-  async getBookInformation(ids: string[]): Promise<GoogleBook[]> {
+  async getBookByGBookID(ids: string[]): Promise<GoogleBook[]> {
     let cache: GoogleBook[] = await this.checkIfInCache(ids);
     let promises: Promise<any>[] = [];
     ids.forEach((e, i) => {

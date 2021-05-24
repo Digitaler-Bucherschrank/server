@@ -6,8 +6,8 @@ import { Types } from "mongoose";
 
 @modelOptions({ schemaOptions: { collection: "bookshelfs", validateBeforeSave: false } })
 export class BookCase implements Base {
-  _id: Types.ObjectId;
-  id: string;
+  public _id: Types.ObjectId;
+  public id: string;
 
   @prop()
   address!: string;

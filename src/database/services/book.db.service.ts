@@ -3,7 +3,7 @@ import { Book } from "../schemas/Book";
 import { InjectModel } from "nestjs-typegoose";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
 import { User } from "../schemas/User";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, ObjectId } from "mongoose";
 
 @Injectable()
 export class BookDbService {
@@ -37,10 +37,10 @@ export class BookDbService {
     })
   }
 
-  async findBooks(query: FilterQuery<User>, test: number): Promise<Book[]> {
+  async findBooks(query: FilterQuery<User>, limit: number): Promise<Book[]> {
     const bookM = this.bookModel;
     return new Promise(function(fulfil, reject) {
-      bookM.find(query).limit(test).exec().then( (res) => {
+      bookM.find(query).limit(limit).exec().then( (res) => {
           if(res){
             fulfil(res)
           } else {
