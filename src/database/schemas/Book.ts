@@ -1,8 +1,8 @@
 import { BookCase } from "./BookCase";
 import { User } from "./User";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
-import { Types } from "mongoose";
+import { modelOptions, mongoose, prop, Ref } from "@typegoose/typegoose";
+import { Schema, Types } from "mongoose";
 
 @modelOptions({ schemaOptions: { collection: "books", timestamps: true, validateBeforeSave: false } })
 export class Book implements Base {
@@ -20,8 +20,19 @@ export class Book implements Base {
   public _id: Types.ObjectId;
   public id: string;
 
-  @prop({ required: true })
+  @prop({ required: true, default: "undefined" })
   gbookid!: string;
+
+  @prop({})
+  bookInfo?: {
+    description: string,
+
+    publisher: string,
+
+    publishedDate: string,
+
+    language: string,
+  };
 
   @prop({required:false})
   ISBN!: string;
@@ -29,13 +40,13 @@ export class Book implements Base {
   @prop({required:true})
   addedmanual!: boolean;
 
-  @prop({required:true})
+  @prop({required:true, default: false})
   borrowed!: boolean;
   
   @prop({required:true})
   author!: string;
 
-  @prop({ required: true })
+  @prop({ required: true})
   title!: string;
 
   @prop({ ref: () => User, required: true })
@@ -47,7 +58,7 @@ export class Book implements Base {
   @prop()
   createdAt!: Date;
 
-  @prop()
+  @prop({default: "somedefaultthumb"})
   thumbnail!: string;
 
   @prop()

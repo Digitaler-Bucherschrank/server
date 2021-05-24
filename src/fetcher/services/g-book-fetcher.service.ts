@@ -59,7 +59,7 @@ export class GBookFetcherService {
       let index = 0;
       for (let i in cache) {
         if (cache[i] == null) {
-          if (isNullOrUndefined(responses[index].data.items)) {
+          if (responses[index].data.items == null) {
             throw new HttpException("no_book_found", HttpStatus.BAD_REQUEST);
           }
           
