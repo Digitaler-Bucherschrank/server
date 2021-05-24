@@ -42,10 +42,10 @@ export class User implements Base {
   @prop({ ref: () => Book , default: []})
   donatedBooks!: Ref<Book>[];
 
-  @prop()
+  @prop({required: true})
   createdAt!: Date;
 
-  @prop()
+  @prop({required: true})
   updatedAt!: Date;
 
 }

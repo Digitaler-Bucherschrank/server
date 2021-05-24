@@ -4,8 +4,8 @@ import {
   Controller,
   Get,
   HttpException,
-  HttpStatus,
-  Post,
+  HttpStatus, Param,
+  Post, Query, Req,
   Request,
   UseGuards
 } from "@nestjs/common";
@@ -61,17 +61,22 @@ export class ApiController {
   }
 
   @UseGuards(JwtAccessAuthGuard)
-  @Get("searchBookCase")
-  async searchBookCase(@Body() createBookCase: BookCase) {
+  @Get("getBookCase")
+  async searchBookCase(@Query('_id') id: string, @Query('type') type: string, @Request() req) {
     if (
-      isValidObjectId(createBookCase._id) == false
+      isValidObjectId(id) == false
     ) {
       throw new HttpException("invalid_bookcase_id", HttpStatus.BAD_REQUEST);
     }
 
-    let res = await this.bookcasedbService.findBookCases(createBookCase);
-    if (!res == null) {
-      return res;
+    let res = await this.bookcasedbService.findBookCaseByID(id);
+
+    if (res != null) {
+      if((type ?? "") == "inventory"){
+        return res.inventory;
+      } else {
+        return res;
+      }
     } else {
       throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
     }
@@ -98,24 +103,6 @@ export class ApiController {
     }
   }
 
-  @UseGuards(JwtAccessAuthGuard)
-  @Get("bookCaseInventory")
-  async bookCaseInventory(@Body() createBookCase: BookCase) {
-    if (
-      isValidObjectId(createBookCase._id) == false
-    ) {
-      throw new HttpException("invalid_bookcase_id", HttpStatus.BAD_REQUEST);
-    }
-
-    let res = await this.bookcasedbService.findBookCase(createBookCase);
-
-    if (res) {
-      return res.inventory;
-    } else {
-      throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
-    }
-  }
-
   /**
    * Donate a book, pass type: "manual" if you want to donate a book with custom data
    * @param body
@@ -125,44 +112,49 @@ export class ApiController {
   @Post("donateBook") //needs ISBN and location
   async donateBook(@Body() body, @Request() req) {
     let book = new Book();
-    if(body.type == "manual"){
-      let data = await this.fetcherService.getBookByISBN([body.ISBN]);
+    if(body.type != "manual"){
+      let data = await this.fetcherService.getBookByGBookID([body.bookid]);
       book.gbookid = data[0].id;
-      book.ISBN = body.ISBN;
+      book.ISBN = data[0].volumeInfo.industryIdentifiers.find(value => value["type"] == "ISBN_13")?.identifier;
       book.author = data[0].volumeInfo.authors[0];
       book.title = data[0].volumeInfo.title;
       book.thumbnail = data[0].volumeInfo.imageLinks?.thumbnail;
 
       book.donor = req.user;
-      book.location = body.location;
+      book.location = body.bookcaseId;
       book.addedmanual = false;
     } else {
-       book = Book.createBook(body.book)
-       book.addedmanual = true;
+      book = new (this.bookdbService.getModel())(JSON.parse(body.book));
+
+      book.donor = req.user;
+      book.location = body.bookcaseId;
+      book.addedmanual = true;
     }
 
-    let bookcase = await this.bookcasedbService.findBookCase({
-      location: new mongoose.Types.ObjectId(body.location) ?? ""
-    });
+    let bookcase = await this.bookcasedbService.findBookCasebyID(body.bookcaseId);
 
     if (!bookcase) {
       throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
     }
 
-    let res = await this.bookdbService.insertBook(book);
-
-    if (!res) {
-      throw new HttpException("incomplete_book_data", HttpStatus.BAD_REQUEST);
-    }
-
     await (req.user as DocumentType<User>).db.transaction(async (session) => {
-      req.user.donatedBooks.push(<Book>res).s;
+      let res = await this.bookdbService.insertBook(book);
+
+      if (!res) {
+        throw new HttpException("incomplete_book_data", HttpStatus.BAD_REQUEST);
+      }
+
+      req.user.donatedBooks.push(<Book>res);
       bookcase.inventory.push(<Book>res);
 
       await (bookcase as DocumentType<BookCase>).save();
       await (req.user as DocumentType<User>).save();
     }).catch(err => {
-      throw new HttpException("internal_error", HttpStatus.INTERNAL_SERVER_ERROR);
+      if(err instanceof HttpException){
+        throw err
+      } else {
+        throw new HttpException("internal_error", HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }).then(() => {
       return true;
     });
@@ -190,7 +182,8 @@ export class ApiController {
 
       if (!bookcase) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
 
-      if (book.location == bookcase._id) {
+      if (bookcase._id.equals((book.location as mongoose.Types.ObjectId))) {
+        // Double Failsafe
         if (book.borrowed == true) {
           throw new HttpException(
             "error_already_borrowed",
@@ -199,13 +192,13 @@ export class ApiController {
         }
 
         await (req.user as DocumentType<User>).db.transaction(async (session) => {
-          let ind = bookcase.inventory.findIndex(bookCase => bookCase == book.location);
+          let ind = bookcase.inventory.findIndex(bookCase => bookCase.toString() == book._id.toString() );
           if (ind == -1) {
             throw new HttpException("internal_error", HttpStatus.INTERNAL_SERVER_ERROR); //further definition
           }
 
           // TODO: fix up that shit
-          bookcase.inventory = bookcase.inventory.splice(ind, 1);
+          bookcase.inventory.splice(ind, 1);
           (req.user as DocumentType<User>).borrowedBooks.push(<Book>book);
 
           book.location = req.user._id;
@@ -250,13 +243,13 @@ export class ApiController {
 
       if (!bookcase) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
 
-      if(book.location != req.user._id){
+      if(book.location.toString() != req.user._id.toString()){
         throw new HttpException("not_borrowed_by_user", HttpStatus.BAD_REQUEST);
       }
 
       await (req.user as DocumentType<User>).db.transaction(async (session) => {
         (bookcase as DocumentType<BookCase>).inventory.push(<Book>book);
-        (req.user as DocumentType<User>).borrowedBooks.filter(borrowedBook => book._id != borrowedBook);
+        (req.user as DocumentType<User>).borrowedBooks = req.user.borrowedBooks.filter(borrowedBook => book._id.toString() != borrowedBook.toString());
 
         book.location = bookcase._id;
         book.borrowed = false;
@@ -265,7 +258,7 @@ export class ApiController {
         await (book as DocumentType<Book>).save();
         await (bookcase as DocumentType<BookCase>).save();
       }).
-      catch(() => {
+      catch(err => {
         throw new HttpException("internal_error", HttpStatus.INTERNAL_SERVER_ERROR);
       });
     }

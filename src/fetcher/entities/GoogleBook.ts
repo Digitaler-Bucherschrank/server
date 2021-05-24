@@ -7,6 +7,7 @@ export interface GoogleBook {
     "authors": [
       string
     ],
+    "industryIdentifiers": any[],
     "publisher": string,
     "publishedDate": string,
     "description": string,

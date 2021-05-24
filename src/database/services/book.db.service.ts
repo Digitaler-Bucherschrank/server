@@ -19,7 +19,7 @@ export class BookDbService {
   async insertBook(book: Book): Promise<Book | boolean> {
     const gg = new this.bookModel(book)
     return new Promise(function(fulfil, reject) {
-      gg.save({ validateBeforeSave: true }, (err, res) => {
+      gg.save({ validateBeforeSave: true , timestamps: true}, (err, res) => {
         if (err) {
           fulfil(false);
         } else {

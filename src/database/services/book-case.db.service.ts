@@ -46,10 +46,38 @@ export class BookCaseDbService {
     })
   }
 
+  async findBookCaseByID(id: String): Promise<BookCase> {
+    const bookM = this.bookCaseModel;
+    return new Promise(function(fulfil, reject) {
+      bookM.findById(id).exec().then( (res) => {
+          if(res){
+            fulfil(res)
+          } else {
+            fulfil(null)
+          }
+        }
+      )
+    })
+  }
+
   async findBookCase(query: FilterQuery<BookCase>): Promise<BookCase> {
     const bookM = this.bookCaseModel;
     return new Promise(function(fulfil, reject) {
       bookM.findOne(query).exec().then( (res) => {
+          if(res){
+            fulfil(res)
+          } else {
+            fulfil(null)
+          }
+        }
+      )
+    })
+  }
+
+  async findBookCasebyID(id: String): Promise<BookCase> {
+    const bookM = this.bookCaseModel;
+    return new Promise(function(fulfil, reject) {
+      bookM.findById(id).exec().then( (res) => {
           if(res){
             fulfil(res)
           } else {
