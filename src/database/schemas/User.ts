@@ -1,10 +1,12 @@
 import { Book } from "./Book";
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
+import { modelOptions, plugin, prop, Ref } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import { Types } from "mongoose";
+import * as autopopulate from 'mongoose-autopopulate';
 import validator from "validator";
 
 // TODO: optional custom error messages for validation
+@plugin(autopopulate as any)
 @modelOptions({ schemaOptions: { collection: "users", timestamps: true, validateBeforeSave: false } })
 export class User implements Base {
 
@@ -36,16 +38,16 @@ export class User implements Base {
   // Not actually a database property, just for basic sessions tracking
   client_id?: string
 
-  @prop({ ref: () => Book , default: []})
+  @prop({ ref: () => Book , default: [], autopopulate: { maxDepth: 1 }})
   borrowedBooks!: Ref<Book>[];
 
-  @prop({ ref: () => Book , default: []})
+  @prop({ ref: () => Book , default: [], autopopulate: { maxDepth: 1 }})
   donatedBooks!: Ref<Book>[];
 
-  @prop({required: true})
+  @prop()
   createdAt!: Date;
 
-  @prop({required: true})
+  @prop()
   updatedAt!: Date;
 
 }
