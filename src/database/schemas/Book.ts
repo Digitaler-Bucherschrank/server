@@ -1,9 +1,11 @@
 import { BookCase } from "./BookCase";
 import { User } from "./User";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
-import { modelOptions, mongoose, prop, Ref } from "@typegoose/typegoose";
+import { modelOptions, mongoose, plugin, prop, Ref } from "@typegoose/typegoose";
 import { Schema, Types } from "mongoose";
+import * as autopopulate from 'mongoose-autopopulate';
 
+@plugin(autopopulate as any)
 @modelOptions({ schemaOptions: { collection: "books", timestamps: true, validateBeforeSave: false } })
 export class Book implements Base {
 
@@ -49,10 +51,10 @@ export class Book implements Base {
   @prop({ required: true})
   title!: string;
 
-  @prop({ ref: () => User, required: true })
+  @prop({ ref: () => User, required: true})
   donor!: Ref<User>;
 
-  @prop({ ref: () => BookCase, required: true })
+  @prop({ ref: () => BookCase, required: true , autopopulate: { maxDepth: 1 }})
   location!: Ref<BookCase>;
 
   @prop()
