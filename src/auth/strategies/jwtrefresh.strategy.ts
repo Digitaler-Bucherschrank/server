@@ -12,7 +12,6 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwtRefresh")
       ignoreExpiration: false,
       secretOrKey: Config.secret,
       audience: "refresh",
-      passReqToCallback: true
     });
   }
 
@@ -37,7 +36,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwtRefresh")
     }
 
     if (token_pair.refreshToken.iat == payload.iat) {
-      return payload;
+      return { payload, user };
     } else {
       // TODO: Maybe logout on all devices? ==> Obvious sign for a compromise of user data
       throw "refresh_token_inactive";
