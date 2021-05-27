@@ -54,15 +54,9 @@ export class AuthService {
       })
     };
 
-    let decrypted_at = <{ [key: string]: any }>this.jwtService.decode(tokens.access_token, {
-      json: true,
-      complete: false
-    });
+    let decrypted_at = this.decryptToken(tokens.access_token);
 
-    let decrypted_rt = <{ [key: string]: any }>this.jwtService.decode(tokens.refresh_token, {
-      json: true,
-      complete: false
-    });
+    let decrypted_rt = this.decryptToken(tokens.refresh_token)
 
     user.tokens.push({
       client: user.client_id, accessToken: {
@@ -90,14 +84,56 @@ export class AuthService {
     };
   }
 
-  async refreshTokens(payload) {
-    return {
+  async refreshTokens(info) {
+    let payload = info.payload;
+    let user: DocumentType<User> = info.user;
+
+    let tokens = {
       access_token: this.jwtService.sign({ id: payload.id, cli: payload.cli }),
       refresh_token: this.jwtService.sign({ id: payload.id, cli: payload.cli }, {
         expiresIn: "60d",
         audience: "refresh"
       })
+    }
+
+    let decrypted_at = this.decryptToken(tokens.access_token);
+
+    let decrypted_rt = this.decryptToken(tokens.refresh_token)
+
+    user.tokens = user.tokens.filter(token => token.refreshToken.iat != payload.iat)
+
+    user.tokens.push({
+      client: payload.cli, accessToken: {
+        token: tokens.access_token,
+        iat: decrypted_at.iat
+      }, refreshToken: {
+        token: tokens.refresh_token,
+        iat: decrypted_rt.iat
+      }
+    });
+
+    await (user).save();
+
+    return {
+      id: user._id,
+      username: user.username,
+      tokens: {
+        accessToken: {
+          token: tokens.access_token,
+          iat: decrypted_at.iat
+        }, refreshToken: {
+          token: tokens.refresh_token,
+          iat: decrypted_rt.iat
+        }
+      }
     };
+  }
+
+  decryptToken(token: string){
+    return <{ [key: string]: any }>this.jwtService.decode(token, {
+      json: true,
+      complete: false
+    });
   }
 
   // TODO: Logout route ==> delete access/refresh token pair

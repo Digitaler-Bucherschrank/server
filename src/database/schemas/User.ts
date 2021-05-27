@@ -32,7 +32,7 @@ export class User implements Base {
   @prop({required: true})
   hash!: string;
 
-  @prop({required: true, default: {}})
+  @prop({required: true, default: null})
   tokens!: { client: string, accessToken: { token: string, iat: string }, refreshToken: { token: string, iat: string } }[];
 
   // Not actually a database property, just for basic sessions tracking
