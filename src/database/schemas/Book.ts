@@ -37,7 +37,7 @@ export class Book implements Base {
   };
 
   @prop({required:false})
-  ISBN!: string;
+  isbn!: string;
   
   @prop({required:true})
   addedmanual!: boolean;

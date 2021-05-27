@@ -115,7 +115,7 @@ export class ApiController {
     if(body.type != "manual"){
       let data = await this.fetcherService.getBookByGBookID([body.bookid]);
       book.gbookid = data[0].id;
-      book.ISBN = data[0].volumeInfo.industryIdentifiers.find(value => value["type"] == "ISBN_13")?.identifier;
+      book.isbn = data[0].volumeInfo.industryIdentifiers.find(value => value["type"] == "ISBN_13")?.identifier;
       book.author = data[0].volumeInfo.authors[0];
       book.title = data[0].volumeInfo.title;
       book.thumbnail = data[0].volumeInfo.imageLinks?.thumbnail;
@@ -278,12 +278,22 @@ export class ApiController {
 
   // TODO: add search by attributes as Author or Title when needed
   @UseGuards(JwtAccessAuthGuard)
-  @Get("searchBook")
-  async searchBook(@Body() query) {
+  @Get("searchBooks")
+  async searchBooks(@Query() query) {
     if(query.gbookid != null){
-      return await this.fetcherService.getBookByGBookID([query.isbn]);
+      let queryObj = JSON.parse(query.isbn);
+      if(typeof query[Symbol.iterator] === 'function'){
+        return await this.fetcherService.getBookByGBookID(queryObj);
+      } else {
+        throw new BadRequestException(null, "invalid_search_query")
+      }
     } else if(query.isbn != null) {
-      return await this.fetcherService.getBookByISBN([query.isbn]);
+      let queryObj = JSON.parse(query.isbn);
+      if(typeof queryObj[Symbol.iterator] === 'function'){
+        return await this.fetcherService.getBookByISBN(queryObj);
+      } else {
+        throw new BadRequestException(null, "invalid_search_query")
+      }
     } else {
       throw new BadRequestException(null, "invalid_search_query")
     }
