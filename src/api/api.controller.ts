@@ -121,13 +121,13 @@ export class ApiController {
       book.thumbnail = data[0].volumeInfo.imageLinks?.thumbnail;
 
       book.donor = req.user;
-      book.location = body.bookcaseId;
+      book.location = body.location;
       book.addedmanual = false;
     } else {
       book = new (this.bookdbService.getModel())(JSON.parse(body.book));
 
       book.donor = req.user;
-      book.location = body.bookcaseId;
+      book.location = body.location;
       book.addedmanual = true;
     }
 
@@ -162,7 +162,7 @@ export class ApiController {
 
   /**
    * Borrows a book by a user
-   * @param body ```bookId``` and ```bookcaseId``` needed for information
+   * @param body ```bookId``` and ```location``` needed for information
    * @param req
    */
   @UseGuards(JwtAccessAuthGuard)
@@ -170,7 +170,7 @@ export class ApiController {
   async borrowBook(@Body() body, @Request() req) {
     if (isValidObjectId(body.bookId) == false) {
       throw new HttpException("invalid_book_id", HttpStatus.BAD_REQUEST);
-    } else if(isValidObjectId(body.bookcaseId) == false){
+    } else if(isValidObjectId(body.location) == false){
       throw new HttpException("invalid_bookcase_id", HttpStatus.BAD_REQUEST);
     } else {
 
@@ -178,7 +178,7 @@ export class ApiController {
 
       if (!book) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
 
-      let bookcase = await this.bookcasedbService.findBookCase({ _id: new mongoose.Types.ObjectId(body.bookcaseId) });
+      let bookcase = await this.bookcasedbService.findBookCase({ _id: new mongoose.Types.ObjectId(body.location) });
 
       if (!bookcase) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
 
@@ -223,7 +223,7 @@ export class ApiController {
 
   /**
    * Returns a book from a user
-   * @param body ```bookId``` and ```bookcaseId``` needed for information
+   * @param body ```bookId``` and ```location``` needed for information
    * @param req
    */
   @UseGuards(JwtAccessAuthGuard)
@@ -231,7 +231,7 @@ export class ApiController {
   async returnBook(@Body() body, @Request() req) {
     if (isValidObjectId(body.bookId) == false) {
       throw new HttpException("invalid_book_id", HttpStatus.BAD_REQUEST);
-    } else if(isValidObjectId(body.bookcaseId) == false){
+    } else if(isValidObjectId(body.location) == false){
       throw new HttpException("invalid_bookcase_id", HttpStatus.BAD_REQUEST);
     } else {
 
@@ -239,7 +239,7 @@ export class ApiController {
 
       if (!book) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
 
-      let bookcase = await this.bookcasedbService.findBookCase({ _id: new mongoose.Types.ObjectId(body.bookcaseId) });
+      let bookcase = await this.bookcasedbService.findBookCase({ _id: new mongoose.Types.ObjectId(body.location) });
 
       if (!bookcase) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
 
