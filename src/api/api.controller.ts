@@ -176,13 +176,13 @@ export class ApiController {
 
       let book = await this.bookdbService.findBook({ _id: new mongoose.Types.ObjectId(body.bookId) });
 
-      if (!book) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
+      if (!book) throw new HttpException("book_not_found", HttpStatus.BAD_REQUEST);
 
       let bookcase = await this.bookcasedbService.findBookCase({ _id: new mongoose.Types.ObjectId(body.location) });
 
       if (!bookcase) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
 
-      if (bookcase._id.equals((book.location as mongoose.Types.ObjectId))) {
+      if (bookcase._id.equals((book.location as BookCase)._id)) {
         // Double Failsafe
         if (book.borrowed == true) {
           throw new HttpException(
@@ -192,12 +192,11 @@ export class ApiController {
         }
 
         await (req.user as DocumentType<User>).db.transaction(async (session) => {
-          let ind = bookcase.inventory.findIndex(bookCase => bookCase.toString() == book._id.toString() );
+          let ind = bookcase.inventory.findIndex(InvBook => (InvBook as DocumentType<Book>).equals(book as DocumentType<Book>));
           if (ind == -1) {
             throw new HttpException("internal_error", HttpStatus.INTERNAL_SERVER_ERROR); //further definition
           }
 
-          // TODO: fix up that shit
           bookcase.inventory.splice(ind, 1);
           (req.user as DocumentType<User>).borrowedBooks.push(<Book>book);
 
@@ -210,6 +209,8 @@ export class ApiController {
         }).
         catch(err => {
           throw new HttpException("internal_error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }).then(() => {
+          return true;
         });
 
     } else {
@@ -237,7 +238,7 @@ export class ApiController {
 
       let book = await this.bookdbService.findBook({ _id: new mongoose.Types.ObjectId(body.bookId) });
 
-      if (!book) throw new HttpException("bookcase_not_found", HttpStatus.BAD_REQUEST);
+      if (!book) throw new HttpException("book_not_found", HttpStatus.BAD_REQUEST);
 
       let bookcase = await this.bookcasedbService.findBookCase({ _id: new mongoose.Types.ObjectId(body.location) });
 
