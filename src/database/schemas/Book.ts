@@ -26,7 +26,7 @@ export class Book implements Base {
   gbookid!: string;
 
   @prop({})
-  bookInfo?: {
+  manualBookData?: {
     description: string,
 
     publisher: string,
