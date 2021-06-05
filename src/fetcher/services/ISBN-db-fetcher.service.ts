@@ -79,11 +79,10 @@ export class ISBNdbFetcherService {
       "Content-Type": 'application/json',
       "Authorization": Config.api_key
   }
+
     for (const e of ids) {
       const i = ids.indexOf(e);
       if (cache[i] == undefined)  {
-
-
         promises.push(this.httpService.get(
           `https://api2.isbndb.com/book/${e}`,
 
