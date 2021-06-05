@@ -119,7 +119,7 @@ export class ApiController {
   async donateBook(@Body() body, @Request() req) {
     let book = new Book();
     if (body.type != 'manual') {
-      let data = await this.fetcherService.getBookByGBookID([body.bookid]);
+      let data = await this.fetcherService.getBookByGBookID([body.isbn]);
       book.gbookid = data[0].id;
       book.isbn = data[0].volumeInfo.industryIdentifiers.find(
         (value) => value['type'] == 'ISBN_13',
@@ -293,16 +293,15 @@ export class ApiController {
           book.location = bookcase._id;
           book.borrowed = false;
 
-          await (req.user as DocumentType<User>).save();
-          await (book as DocumentType<Book>).save();
-          await (bookcase as DocumentType<BookCase>).save();
-        })
-        .catch((err) => {
-          throw new HttpException(
-            'internal_error',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-        });
+        await (req.user as DocumentType<User>).save();
+        await (book as DocumentType<Book>).save();
+        await (bookcase as DocumentType<BookCase>).save();
+      }).
+      catch(err => {
+        throw new HttpException("internal_error", HttpStatus.INTERNAL_SERVER_ERROR);
+      }).then(() => {
+        return true;
+      });
     }
   }
 
@@ -324,15 +323,17 @@ export class ApiController {
   async searchBooks(@Query() query) {
     if (query.gbookid != null) {
       let queryObj = JSON.parse(query.isbn);
-      if (typeof query[Symbol.iterator] === 'function') {
-        return await this.fetcherService.getBookByGBookID(queryObj);
+      if(typeof query[Symbol.iterator] === 'function'){
+        return JSON.stringify(await this.fetcherService.getBookByGBookID(queryObj));
+
       } else {
         throw new BadRequestException(null, 'invalid_search_query');
       }
     } else if (query.isbn != null) {
       let queryObj = JSON.parse(query.isbn);
-      if (typeof queryObj[Symbol.iterator] === 'function') {
-        return await this.fetcherService.getBookByISBN(queryObj);
+
+      if(typeof queryObj[Symbol.iterator] === 'function'){
+        return JSON.stringify(await this.fetcherService.getBookByISBN(queryObj));
       } else {
         throw new BadRequestException(null, 'invalid_search_query');
       }
@@ -346,6 +347,7 @@ export class ApiController {
   async logout(@Request() req) {
     return await this.authService.logout(req.user);
   }
+
   @UseGuards(JwtAccessAuthGuard)
   @Get('searchBooksdb')
   async searchBookdb(@Query() query) {
