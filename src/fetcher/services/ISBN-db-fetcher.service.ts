@@ -1,18 +1,19 @@
 import { CACHE_MANAGER, HttpService, Inject, Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { Cache } from "cache-manager";
-import { GoogleBook } from "../entities/GoogleBook";
+//import { GoogleBook } from "../entities/GoogleBook";
+import { ISBNdbBook } from "../entities/ISBNdbBook";
 import axios from "axios";
 import { Config } from "../../config";
 import { isNullOrUndefined } from "@typegoose/typegoose/lib/internal/utils";
 
 //TODO: Bücher mit ISBN suchen lassen
 @Injectable()
-export class GBookFetcherService {
+export class ISBNdbFetcherService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache, private httpService: HttpService) {
   }
 
   // Currently not needed as we only do caching by ISBN
-  async getBookByGBookID(ids: string[]): Promise<GoogleBook[]> {
+ /* async getBookByGBookID(ids: string[]): Promise<GoogleBook[]> {
     let cache: GoogleBook[] = await this.checkIfInCache(ids);
     let promises: Promise<any>[] = [];
     ids.forEach((e, i) => {
@@ -32,19 +33,19 @@ export class GBookFetcherService {
       }
       return cache;
     }));
-  }
+  } */
 
-  async checkIfInCache(ids: string[]): Promise<GoogleBook[]> {
+  async checkIfInCache(ids: string[]): Promise<ISBNdbBook[]> {
     let res = [];
     for (const v of ids) {
       await this.cacheManager.get(v).then(value =>
-        value == undefined ? res.push(null) : res.push(<GoogleBook>value)
+        value == undefined ? res.push(null) : res.push(<ISBNdbBook>value)
       );
     }
     return res;
   }
 
-  async getBookByISBN(ids: string[]): Promise<GoogleBook[]> {
+ /* async getBookByISBN(ids: string[]): Promise<GoogleBook[]> {
     let cache: GoogleBook[] = await this.checkIfInCache(ids);
     let promises: Promise<any>[] = [];
     
@@ -70,6 +71,44 @@ export class GBookFetcherService {
       }
       return cache;
     }));
+  } */
+  async getBookByISBN(ids: string[]): Promise<ISBNdbBook []> {
+    let cache: ISBNdbBook[] = await this.checkIfInCache(ids);
+    let promises: Promise<any>[] = [];
+    let headers = {
+      "Content-Type": 'application/json',
+      "Authorization": Config.api_key
   }
-}
+    for (const e of ids) {
+      const i = ids.indexOf(e);
+      if (cache[i] == undefined)  {
+
+
+        promises.push(this.httpService.get(
+          `https://api2.isbndb.com/book/${e}`,
+
+          {headers: headers}
+        ).toPromise());
+        }
+    }
+
+
+    return await axios.all(promises).then(axios.spread(async (...responses) => {
+      console.log(responses)
+      let index = 0;
+      for (let i in cache) {
+        if (cache[i] == null) {
+          if (responses[index].data.book == null) {
+            throw new HttpException("no_book_found", HttpStatus.BAD_REQUEST);
+          }
+          
+          cache[i] = responses[index].data.book;
+          await this.cacheManager.set(responses[index].data.book.isbn13, responses[index].data.book);
+          index++;
+        }
+      }
+      return cache;
+    }));
+    
+}}
 
