@@ -1,9 +1,9 @@
 import { Controller, Get } from "@nestjs/common";
-import { GBookFetcherService } from "./fetcher/services/g-book-fetcher.service";
-import { GoogleBook } from "./fetcher/entities/GoogleBook";
-
+import { ISBNdbFetcherService } from "./fetcher/services/ISBN-db-fetcher.service";
+//import { GoogleBook } from "./fetcher/entities/GoogleBook";
+import { ISBNdbBook } from "./fetcher/entities/ISBNdbBook";
 @Controller()
 export class AppController {
-  constructor(private readonly fetcher: GBookFetcherService) {
+  constructor(private readonly fetcher: ISBNdbFetcherService) {
   }
 }
