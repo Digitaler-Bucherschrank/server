@@ -1,5 +1,5 @@
 import { CacheModule, HttpModule, Module } from "@nestjs/common";
-import { GBookFetcherService } from "./services/g-book-fetcher.service";
+import { ISBNdbFetcherService} from "./services/ISBN-db-fetcher.service";
 
 import * as fsStore from "cache-manager-fs-hash";
 
@@ -14,8 +14,8 @@ import * as fsStore from "cache-manager-fs-hash";
       }
     }
   ), HttpModule],
-  providers: [GBookFetcherService],
-  exports: [GBookFetcherService]
+  providers: [ISBNdbFetcherService],
+  exports: [ISBNdbFetcherService]
 })
 export class FetcherModule {
 }
