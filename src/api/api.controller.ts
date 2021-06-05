@@ -119,9 +119,9 @@ export class ApiController {
   async donateBook(@Body() body, @Request() req) {
     let book = new Book();
     if (body.type != 'manual') {
-      let data = await this.fetcherService.getBookByISBN([body.ISBN]);
+      let data = await this.fetcherService.getBookByISBN([body.isbn]);
       book.isbn = data[0].isbn13
-      book.author = data[0].authors[0];
+      book.author = data[0].authors[0] ?? "-";
       book.title = data[0].title;
       book.thumbnail = data[0].image;
 
