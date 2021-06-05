@@ -17,7 +17,7 @@ import { BookDbService } from '../database/services/book.db.service';
 import { BookCaseDbService } from '../database/services/book-case.db.service';
 import { Book } from 'src/database/schemas/Book';
 import { User } from 'src/database/schemas/User';
-import { GBookFetcherService } from '../fetcher/services/g-book-fetcher.service';
+import { ISBNdbFetcherService } from '../fetcher/services/ISBN-db-fetcher.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../auth/auth.service';
 import { JwtRefreshAuthGuard } from '../auth/guards/jwtrefresh.guard';
@@ -39,7 +39,7 @@ export class ApiController {
   constructor(
     private authService: AuthService,
     private readonly userdbService: UserDbService,
-    private readonly fetcherService: GBookFetcherService,
+    private readonly fetcherService: ISBNdbFetcherService,
     private readonly bookdbService: BookDbService,
     private readonly bookcasedbService: BookCaseDbService,
   ) {}
@@ -119,14 +119,11 @@ export class ApiController {
   async donateBook(@Body() body, @Request() req) {
     let book = new Book();
     if (body.type != 'manual') {
-      let data = await this.fetcherService.getBookByGBookID([body.bookid]);
-      book.gbookid = data[0].id;
-      book.isbn = data[0].volumeInfo.industryIdentifiers.find(
-        (value) => value['type'] == 'ISBN_13',
-      )?.identifier;
-      book.author = data[0].volumeInfo.authors[0];
-      book.title = data[0].volumeInfo.title;
-      book.thumbnail = data[0].volumeInfo.imageLinks?.thumbnail;
+      let data = await this.fetcherService.getBookByISBN([body.ISBN]);
+      book.isbn = data[0].isbn13
+      book.author = data[0].authors[0];
+      book.title = data[0].title;
+      book.thumbnail = data[0].image;
 
       book.donor = req.user;
       book.location = body.location;
@@ -322,14 +319,7 @@ export class ApiController {
   @UseGuards(JwtAccessAuthGuard)
   @Get('searchBooks')
   async searchBooks(@Query() query) {
-    if (query.gbookid != null) {
-      let queryObj = JSON.parse(query.isbn);
-      if (typeof query[Symbol.iterator] === 'function') {
-        return await this.fetcherService.getBookByGBookID(queryObj);
-      } else {
-        throw new BadRequestException(null, 'invalid_search_query');
-      }
-    } else if (query.isbn != null) {
+    if (query.isbn != null) {
       let queryObj = JSON.parse(query.isbn);
       if (typeof queryObj[Symbol.iterator] === 'function') {
         return await this.fetcherService.getBookByISBN(queryObj);

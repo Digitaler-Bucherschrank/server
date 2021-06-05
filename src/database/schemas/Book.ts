@@ -22,9 +22,6 @@ export class Book implements Base {
   public _id: Types.ObjectId;
   public id: string;
 
-  @prop({ required: true, default: "undefined" })
-  gbookid!: string;
-
   @prop({})
   manualBookData?: {
     description: string,
