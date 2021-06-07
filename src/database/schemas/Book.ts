@@ -54,10 +54,13 @@ export class Book implements Base {
   @prop({ ref: () => BookCase, required: true , autopopulate: { maxDepth: 1 }})
   location!: Ref<BookCase>;
 
+  @prop({ ref: () => User, required: false , autopopulate: { maxDepth: 1 }})
+  currentUser?: Ref<User>;
+
   @prop()
   createdAt!: Date;
 
-  @prop({default: "somedefaultthumb"})
+  @prop({default: "null"})
   thumbnail!: string;
 
   @prop()
