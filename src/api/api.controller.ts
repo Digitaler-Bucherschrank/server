@@ -124,16 +124,20 @@ export class ApiController {
       book.author = data[0].authors[0] ?? "-";
       book.title = data[0].title;
       book.thumbnail = data[0].image;
-
+      
       book.donor = req.user;
       book.location = body.location;
+      book.currentUser = null;
       book.addedmanual = false;
+  
     } else {
       book = new (this.bookdbService.getModel())(JSON.parse(body.book));
 
       book.donor = req.user;
       book.location = body.location;
+      book.currentUser = null;
       book.addedmanual = true;
+      
     }
 
     let bookcase = await this.bookcasedbService.findBookCasebyID(body.location);
@@ -182,6 +186,7 @@ export class ApiController {
   @UseGuards(JwtAccessAuthGuard)
   @Post('borrowBook')
   async borrowBook(@Body() body, @Request() req) {
+    
     if (isValidObjectId(body.bookId) == false) {
       throw new HttpException('invalid_book_id', HttpStatus.BAD_REQUEST);
     } else if (isValidObjectId(body.location) == false) {
@@ -191,9 +196,15 @@ export class ApiController {
         _id: new mongoose.Types.ObjectId(body.bookId),
       });
 
-      if (!book)
+      if (!book) {
         throw new HttpException('book_not_found', HttpStatus.BAD_REQUEST);
-
+    }
+    if (book.borrowed == true) {
+      throw new HttpException(
+        'error_already_borrowed',
+        HttpStatus.BAD_REQUEST,
+      ); //needs further specification
+    }
       let bookcase = await this.bookcasedbService.findBookCase({
         _id: new mongoose.Types.ObjectId(body.location),
       });
@@ -203,12 +214,7 @@ export class ApiController {
 
       if (bookcase._id.equals((book.location as BookCase)._id)) {
         // Double Failsafe
-        if (book.borrowed == true) {
-          throw new HttpException(
-            'error_already_borrowed',
-            HttpStatus.BAD_REQUEST,
-          ); //needs further specification
-        }
+        
 
         await (req.user as DocumentType<User>).db
           .transaction(async (session) => {
@@ -226,8 +232,10 @@ export class ApiController {
 
             bookcase.inventory.splice(ind, 1);
             (req.user as DocumentType<User>).borrowedBooks.push(<Book>book);
-
-            book.location = req.user._id;
+              
+            book.currentUser = req.user._id;
+            
+            book.location = null;
             book.borrowed = true;
 
             await (req.user as DocumentType<User>).save();
@@ -265,10 +273,16 @@ export class ApiController {
       let book = await this.bookdbService.findBook({
         _id: new mongoose.Types.ObjectId(body.bookId),
       });
-
-      if (!book)
+   
+      if (!book) {
         throw new HttpException('book_not_found', HttpStatus.BAD_REQUEST);
-
+      }
+      if (book.borrowed == false) {
+        throw new HttpException(
+          'error_already_returned',
+          HttpStatus.BAD_REQUEST,
+        ); //needs further specification
+      }
       let bookcase = await this.bookcasedbService.findBookCase({
         _id: new mongoose.Types.ObjectId(body.location),
       });
@@ -276,9 +290,9 @@ export class ApiController {
       if (!bookcase)
         throw new HttpException('bookcase_not_found', HttpStatus.BAD_REQUEST);
 
-      if (book.location.toString() != req.user._id.toString()) {
+    /*  if (book.currentUser.toString() != req.user._id.toString()) {
         throw new HttpException('not_borrowed_by_user', HttpStatus.BAD_REQUEST);
-      }
+      } */
 
       await (req.user as DocumentType<User>).db
         .transaction(async (session) => {
@@ -288,6 +302,7 @@ export class ApiController {
           );
 
           book.location = bookcase._id;
+          book.currentUser =null;
           book.borrowed = false;
 
         await (req.user as DocumentType<User>).save();
