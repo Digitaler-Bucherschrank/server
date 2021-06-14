@@ -331,7 +331,7 @@ export class ApiController {
 
   // TODO: add search by attributes as Author or Title when needed
   @UseGuards(JwtAccessAuthGuard)
-  @Get('searchBooks')
+  @Get('getBookInfo')
   async searchBooks(@Query() query) {
     if (query.isbn != null) {
       let queryObj = JSON.parse(query.isbn);
@@ -353,7 +353,7 @@ export class ApiController {
   }
 
   @UseGuards(JwtAccessAuthGuard)
-  @Get('searchBooksdb')
+  @Get('searchBooks')
   async searchBookdb(@Query() query) {
     if (query.title != null) {
       return await this.bookdbService.findBooks(
