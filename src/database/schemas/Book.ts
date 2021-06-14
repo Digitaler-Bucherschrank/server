@@ -51,13 +51,10 @@ export class Book implements Base {
   @prop({ ref: () => User, required: true})
   donor!: Ref<User>;
 
-  @prop({ ref: () => BookCase, required: true , autopopulate: { maxDepth: 1 }})
-  location?: Ref<BookCase>;
+  @prop({ ref: () => BookCase, required: true})
+  location!: Ref<BookCase>;
 
-  @prop({ ref: () => User, required: false , autopopulate: { maxDepth: 1 }})
-  currentUser?: Ref<User>;
-
-  @prop({ ref: () => User, required: false , autopopulate: { maxDepth: 1 }})
+  @prop({ ref: () => User, required: false})
   currentUser?: Ref<User>;
 
   @prop()
