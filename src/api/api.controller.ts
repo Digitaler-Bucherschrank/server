@@ -355,16 +355,13 @@ export class ApiController {
   @UseGuards(JwtAccessAuthGuard)
   @Get('searchBooks')
   async searchBookdb(@Query() query) {
-    if (query.title != null) {
+    if (query.query != null) {
       return await this.bookdbService.findBooks(
-        { title: { $regex: query.title, $options: 'i' } },
+        { $or: [ { title: { $regex: query.query, $options: 'i' } }, { author: { $regex: query.query, $options: 'i' } } ] },
         5,
       );
-    } else if (query.author != null) {
-      return await this.bookdbService.findBooks(
-        { author: { $regex: query.author, $options: 'i' } },
-        5,
-      );
+    } else {
+      throw new BadRequestException(null, 'invalid_search_query');
     }
   }
 }
