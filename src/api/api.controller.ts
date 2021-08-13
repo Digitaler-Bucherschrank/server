@@ -298,7 +298,7 @@ export class ApiController {
         .transaction(async (session) => {
           (bookcase as DocumentType<BookCase>).inventory.push(<Book>book);
           (req.user as DocumentType<User>).borrowedBooks = req.user.borrowedBooks.filter(
-            (borrowedBook) => book._id.toString() != borrowedBook.toString(),
+            (borrowedBook) => book._id.toString() != borrowedBook._id.toString(),
           );
 
           book.location = bookcase._id;
