@@ -11,6 +11,18 @@ $ npm install
 
 ## Running the app
 
+You need to create a config.ts in src/ which has the following structure:
+```typescript
+export const Config = {
+  "connection_string": "", // Connection string to the (mongodb) database 
+  "api_key": "", // Access key for the isbn-db API
+  "secret": "", // Any random string used for generating JWT Tokens for authentication
+  "working_dir": "" // Directory of src/, needed for maintenance mode checks
+};
+```
+
+
+Starting the server:
 ```bash
 # development
 $ npm run start
@@ -24,7 +36,7 @@ $ npm run start:prod
 
 ## Support & Stay in touch
 
-PM me on discord: Flawn#6197 
+If you have any requests, please pm me on Discord: Flawn#6197 
 
 ## License
 
