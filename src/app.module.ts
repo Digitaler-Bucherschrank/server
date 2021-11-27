@@ -6,6 +6,8 @@ import { FetcherModule } from "./fetcher/fetcher.module";
 import { AuthModule } from "./auth/auth.module";
 import { Config } from "./config";
 import { TypegooseModule } from "nestjs-typegoose";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { StatusInterceptor } from "./status/status.interceptor";
 
 /**
  *  !! important, if you fork this project !!
@@ -19,7 +21,13 @@ import { TypegooseModule } from "nestjs-typegoose";
     }),
     AuthModule
   ],
-  controllers: [AppController]
+  controllers: [AppController],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: StatusInterceptor,
+    },
+  ]
 })
 export class AppModule {
 }
