@@ -66,11 +66,12 @@ export class ApiController {
     }
   }
 
+  // Temporary, maybe provides in the future more information to the client; right now just dummy endpoint for the Client checking if the server is up
   @Get('getStatus')
   async getStatus(
     @Request() req
   ) {
-
+      return {}
   }
 
   @UseGuards(JwtAccessAuthGuard)
