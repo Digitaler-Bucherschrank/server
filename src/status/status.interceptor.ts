@@ -12,9 +12,6 @@ export class StatusInterceptor implements NestInterceptor {
     let file = fs.readFileSync(path.join(Config.working_dir, './assets/maintenance.json'), 'utf8');
     let maintenance = JSON.parse(file);
 
-    console.log("GG")
-
-
     // TODO: Return approximate time for maintenance
     if (maintenance.status === "maintenance") {
       throw new HttpException('maintenance_mode', HttpStatus.SERVICE_UNAVAILABLE)
