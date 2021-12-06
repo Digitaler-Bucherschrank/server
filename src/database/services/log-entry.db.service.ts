@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { LogEntry } from "../schemas/LogEntry";
-import { InjectModel } from "nestjs-typegoose";
+import { InjectModel } from "@m8a/nestjs-typegoose";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
 import { FilterQuery } from "mongoose";
 import { User } from "../schemas/User";
@@ -33,7 +33,7 @@ export class LogEntryDbService {
     })
   }
 
-  async findLogEntries(query: FilterQuery<User>): Promise<LogEntry[]> {
+  async findLogEntries(query: FilterQuery<DocumentType<LogEntry>>): Promise<LogEntry[]> {
     const bookM = this.logEntryModel;
     return new Promise(function(fulfil, reject) {
       bookM.find(query).exec().then( (res) => {
@@ -47,7 +47,7 @@ export class LogEntryDbService {
     })
   }
 
-  async findLogEntry(query: FilterQuery<User>): Promise<LogEntry> {
+  async findLogEntry(query: FilterQuery<DocumentType<LogEntry>>): Promise<LogEntry> {
     const bookM = this.logEntryModel;
     return new Promise(function(fulfil, reject) {
       bookM.findOne(query).exec().then( (res) => {

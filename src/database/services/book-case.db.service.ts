@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectModel } from "nestjs-typegoose";
+import { InjectModel } from "@m8a/nestjs-typegoose";
 import { BookCase } from "../schemas/BookCase";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
 import { FilterQuery } from "mongoose";
@@ -33,7 +33,7 @@ export class BookCaseDbService {
     })
   }
 
-  async findBookCases(query: FilterQuery<BookCase>): Promise<BookCase[]> {
+  async findBookCases(query: FilterQuery<DocumentType<BookCase>>): Promise<BookCase[]> {
     const bookM = this.bookCaseModel;
     return new Promise(function(fulfil, reject) {
       bookM.find(query).exec((err, res) => {
@@ -60,7 +60,7 @@ export class BookCaseDbService {
     })
   }
 
-  async findBookCase(query: FilterQuery<BookCase>): Promise<BookCase> {
+  async findBookCase(query: FilterQuery<DocumentType<BookCase>>): Promise<BookCase> {
     const bookM = this.bookCaseModel;
     return new Promise(function(fulfil, reject) {
       bookM.findOne(query).exec().then( (res) => {

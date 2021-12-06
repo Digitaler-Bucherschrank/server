@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { User } from "../schemas/User";
-import { InjectModel } from "nestjs-typegoose";
+import { InjectModel } from "@m8a/nestjs-typegoose";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
 import { Error, FilterQuery } from "mongoose";
 
@@ -29,6 +29,8 @@ export class UserDbService {
         if (err) {
           for(let i in err.errors){
             let error = err.errors[i]
+            // TODO: Testen & Umlagern in Models
+            if('path' in error){
               switch(error.path){
                 case("username"): {
                   switch(error.kind){
@@ -55,6 +57,7 @@ export class UserDbService {
                   break;
                 }
               }
+            }
           }
 
           // We are assuming that if it isn't a validation error it must be a MongoError
@@ -82,7 +85,7 @@ export class UserDbService {
     })
   }
 
-  async findUsers(query: FilterQuery<User>): Promise<DocumentType<User>[]> {
+  async findUsers(query: FilterQuery<DocumentType<User>>): Promise<DocumentType<User>[]> {
     const bookM = this.userModel;
     return new Promise(function(fulfil, reject) {
       bookM.find(query).exec().then( (res) => {
@@ -96,7 +99,7 @@ export class UserDbService {
     })
   }
 
-  async findUser(query: FilterQuery<User>): Promise<DocumentType<User>> {
+  async findUser(query: FilterQuery<DocumentType<User>>): Promise<DocumentType<User>> {
     const bookM = this.userModel;
     return new Promise(function(fulfil, reject) {
       bookM.findOne(query).exec().then( (res) => {

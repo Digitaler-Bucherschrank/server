@@ -3,7 +3,7 @@ import { BookCaseDbService } from "./services/book-case.db.service";
 import { BookDbService } from "./services/book.db.service";
 import { LogEntryDbService } from "./services/log-entry.db.service";
 import { UserDbService } from "./services/user.db.service";
-import { TypegooseModule } from "nestjs-typegoose";
+import { TypegooseModule } from "@m8a/nestjs-typegoose";
 import { Book } from "./schemas/Book";
 import { BookCase } from "./schemas/BookCase";
 import { User } from "./schemas/User";
