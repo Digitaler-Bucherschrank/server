@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Book } from "../schemas/Book";
-import { InjectModel } from "nestjs-typegoose";
+import { InjectModel } from "@m8a/nestjs-typegoose";
 import { DocumentType, ReturnModelType } from "@typegoose/typegoose";
 import { User } from "../schemas/User";
 import { FilterQuery, ObjectId } from "mongoose";
@@ -37,7 +37,7 @@ export class BookDbService {
     })
   }
 
-  async findBooks(query: FilterQuery<User>, limit: number): Promise<Book[]> {
+  async findBooks(query: FilterQuery<DocumentType<Book>>, limit: number): Promise<Book[]> {
     const bookM = this.bookModel;
     return new Promise(function(fulfil, reject) {
       bookM.find(query).limit(limit).exec().then( (res) => {
@@ -51,7 +51,7 @@ export class BookDbService {
     })
   }
 
-  async findBook(query: FilterQuery<User>): Promise<Book> {
+  async findBook(query: FilterQuery<DocumentType<Book>>): Promise<Book> {
     const bookM = this.bookModel;
     return new Promise(function(fulfil, reject) {
       bookM.findOne(query).exec().then( (res) => {

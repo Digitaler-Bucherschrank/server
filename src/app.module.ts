@@ -5,7 +5,7 @@ import { ApiModule } from "./api/api.module";
 import { FetcherModule } from "./fetcher/fetcher.module";
 import { AuthModule } from "./auth/auth.module";
 import { Config } from "./config";
-import { TypegooseModule } from "nestjs-typegoose";
+import { TypegooseModule } from "@m8a/nestjs-typegoose";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { StatusInterceptor } from "./status/status.interceptor";
 
@@ -16,9 +16,7 @@ import { StatusInterceptor } from "./status/status.interceptor";
 // TODO: Authentifizierung hinzufügen (siehe NestJS Dokumentation)
 @Module({
   imports: [DatabaseModule, ApiModule, FetcherModule,
-    TypegooseModule.forRoot(Config.connection_string, {
-      useNewUrlParser: true
-    }),
+    TypegooseModule.forRoot(Config.connection_string),
     AuthModule
   ],
   controllers: [AppController],
