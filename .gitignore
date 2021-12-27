@@ -34,7 +34,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # Credentials
-src/config.ts
+.env
 
 # Cache
 api_cache

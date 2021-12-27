@@ -1,7 +1,6 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { Config } from "../../config";
 import { UserDbService } from "../../database/services/user.db.service";
 import { mongoose } from "@typegoose/typegoose";
 
@@ -11,7 +10,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "jwtAccess") {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: Config.secret,
+      secretOrKey: process.env.API_SECRET,
       audience: "access"
     });
   }

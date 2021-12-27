@@ -11,14 +11,12 @@ $ npm install
 
 ## Running the app
 
-You need to create a config.ts in src/ which has the following structure:
-```typescript
-export const Config = {
-  "connection_string": "", // Connection string to the (mongodb) database 
-  "api_key": "", // Access key for the isbn-db API
-  "secret": "", // Any random string used for generating JWT Tokens for authentication
-  "working_dir": "" // Directory of src/, needed for maintenance mode checks
-};
+You need to have a .env file (in the project root) with the following structure:
+```text
+DB_CONN_STR=mongodb+srv:... // Connection string to the (mongodb) database 
+API_KEY=0 // Access key for the isbn-db API
+API_SECRET=test // Any random string used for generating JWT Tokens for authentication
+WORKING_DIR=C:\... // Directory of src/, needed for maintenance mode checks
 ```
 
 

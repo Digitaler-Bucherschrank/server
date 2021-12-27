@@ -1,10 +1,7 @@
 import { CACHE_MANAGER, HttpService, Inject, Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { Cache } from "cache-manager";
-//import { GoogleBook } from "../entities/GoogleBook";
 import { ISBNdbBook } from "../entities/ISBNdbBook";
 import axios from "axios";
-import { Config } from "../../config";
-import { isNullOrUndefined } from "@typegoose/typegoose/lib/internal/utils";
 
 //TODO: Bücher mit ISBN suchen lassen
 @Injectable()
@@ -72,12 +69,13 @@ export class ISBNdbFetcherService {
       return cache;
     }));
   } */
+
   async getBookByISBN(ids: string[]): Promise<ISBNdbBook []> {
     let cache: ISBNdbBook[] = await this.checkIfInCache(ids);
     let promises: Promise<any>[] = [];
     let headers = {
       "Content-Type": 'application/json',
-      "Authorization": Config.api_key
+      "Authorization": process.env.API_KEY
   }
 
     for (const e of ids) {
