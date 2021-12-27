@@ -16,7 +16,6 @@ You need to have a .env file (in the project root) with the following structure:
 DB_CONN_STR=mongodb+srv:... // Connection string to the (mongodb) database 
 API_KEY=0 // Access key for the isbn-db API
 API_SECRET=test // Any random string used for generating JWT Tokens for authentication
-WORKING_DIR=C:\... // Directory of src/, needed for maintenance mode checks
 ```
 
 
