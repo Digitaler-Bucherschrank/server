@@ -1,14 +1,16 @@
-import { User } from "./User";
-import { modelOptions, prop, Ref } from "@typegoose/typegoose";
-import { Base } from "@typegoose/typegoose/lib/defaultClasses";
-import { Types } from "mongoose";
+import { User } from './User';
+import { modelOptions, prop, Ref } from '@typegoose/typegoose';
+import { Base } from '@typegoose/typegoose/lib/defaultClasses';
+import { Types } from 'mongoose';
 
-@modelOptions({ schemaOptions: { collection: "logs", validateBeforeSave: false } })
+@modelOptions({
+  schemaOptions: { collection: 'logs', validateBeforeSave: false },
+})
 export class LogEntry implements Base {
   _id: Types.ObjectId;
   id: string;
 
-  @prop({required:true})
+  @prop({ required: true })
   timestamp!: Date;
 
   @prop()

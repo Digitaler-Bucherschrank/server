@@ -1,22 +1,24 @@
-import { Book } from "./Book";
-import { Base } from "@typegoose/typegoose/lib/defaultClasses";
-import { modelOptions, plugin, prop, Ref } from "@typegoose/typegoose";
-import { Types } from "mongoose";
+import { Book } from './Book';
+import { Base } from '@typegoose/typegoose/lib/defaultClasses';
+import { modelOptions, plugin, prop, Ref } from '@typegoose/typegoose';
+import { Types } from 'mongoose';
 import * as autopopulate from 'mongoose-autopopulate';
 
 @plugin(autopopulate as any)
-@modelOptions({ schemaOptions: { collection: "bookshelfs", validateBeforeSave: false } })
+@modelOptions({
+  schemaOptions: { collection: 'bookshelfs', validateBeforeSave: false },
+})
 export class BookCase implements Base {
   public _id: Types.ObjectId;
   public id: string;
 
   @prop()
   address!: string;
-  
-  @prop({ ref: () => Book , default: [], autopopulate: { maxDepth: 1 }})
+
+  @prop({ ref: () => Book, default: [], autopopulate: { maxDepth: 1 } })
   inventory!: Ref<Book>[];
-  
-  @prop({required:true})
+
+  @prop({ required: true })
   title!: string;
 
   @prop()
@@ -29,7 +31,7 @@ export class BookCase implements Base {
   contact!: string;
 
   @prop()
-  deactivated?: Boolean;
+  deactivated?: boolean;
 
   @prop()
   deactreason?: string;

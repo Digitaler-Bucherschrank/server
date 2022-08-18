@@ -1,22 +1,33 @@
-import { BookCase } from "./BookCase";
-import { User } from "./User";
-import { Base } from "@typegoose/typegoose/lib/defaultClasses";
-import { modelOptions, mongoose, plugin, prop, Ref } from "@typegoose/typegoose";
-import { Schema, Types } from "mongoose";
+import { BookCase } from './BookCase';
+import { User } from './User';
+import { Base } from '@typegoose/typegoose/lib/defaultClasses';
+import {
+  modelOptions,
+  mongoose,
+  plugin,
+  prop,
+  Ref,
+} from '@typegoose/typegoose';
+import { Schema, Types } from 'mongoose';
 import * as autopopulate from 'mongoose-autopopulate';
 
 @plugin(autopopulate as any)
-@modelOptions({ schemaOptions: { collection: "books", timestamps: true, validateBeforeSave: false } })
+@modelOptions({
+  schemaOptions: {
+    collection: 'books',
+    timestamps: true,
+    validateBeforeSave: false,
+  },
+})
 export class Book implements Base {
+  public static createBook(bookDTO: Object): Book {
+    const book = new Book();
 
-  public static createBook(bookDTO: Object): Book{
-    let book = new Book();
-
-    Object.keys(bookDTO).forEach(function(key,index) {
-      book[key] = bookDTO[key]
+    Object.keys(bookDTO).forEach(function (key, index) {
+      book[key] = bookDTO[key];
     });
 
-    return book
+    return book;
   }
 
   public _id: Types.ObjectId;
@@ -24,43 +35,43 @@ export class Book implements Base {
 
   @prop({})
   manualBookData?: {
-    description: string,
+    description: string;
 
-    publisher: string,
+    publisher: string;
 
-    publishedDate: string,
+    publishedDate: string;
 
-    language: string,
+    language: string;
   };
 
-  @prop({required:false})
+  @prop({ required: false })
   isbn!: string;
-  
-  @prop({required:true})
+
+  @prop({ required: true })
   addedmanual!: boolean;
 
-  @prop({required:true, default: false})
+  @prop({ required: true, default: false })
   borrowed!: boolean;
-  
-  @prop({required:true})
+
+  @prop({ required: true })
   author!: string;
 
-  @prop({ required: true})
+  @prop({ required: true })
   title!: string;
 
-  @prop({ ref: () => User, required: true})
+  @prop({ ref: () => User, required: true })
   donor!: Ref<User>;
 
-  @prop({ ref: () => BookCase, required: true})
+  @prop({ ref: () => BookCase, required: true })
   location!: Ref<BookCase>;
 
-  @prop({ ref: () => User, required: false})
+  @prop({ ref: () => User, required: false })
   currentUser?: Ref<User>;
 
   @prop()
   createdAt!: Date;
 
-  @prop({default: "null"})
+  @prop({ default: 'null' })
   thumbnail!: string;
 
   @prop()
