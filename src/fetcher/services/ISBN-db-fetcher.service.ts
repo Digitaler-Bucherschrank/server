@@ -1,6 +1,5 @@
 import {
   CACHE_MANAGER,
-  HttpService,
   Inject,
   Injectable,
   HttpException,
@@ -9,6 +8,7 @@ import {
 import { Cache } from 'cache-manager';
 import { ISBNdbBook } from '../entities/ISBNdbBook';
 import axios from 'axios';
+import { HttpService } from '@nestjs/axios';
 
 //TODO: Bücher mit ISBN suchen lassen
 @Injectable()

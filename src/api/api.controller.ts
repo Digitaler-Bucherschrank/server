@@ -24,8 +24,6 @@ import { JwtRefreshAuthGuard } from '../auth/guards/jwtrefresh.guard';
 import { JwtAccessAuthGuard } from '../auth/guards/jwtaccess.guard';
 import { DocumentType, mongoose } from '@typegoose/typegoose';
 import { BookCase } from 'src/database/schemas/BookCase';
-import * as fs from 'fs';
-import path from 'node:path';
 
 const ObjectId = require('mongoose').Types.ObjectId;
 

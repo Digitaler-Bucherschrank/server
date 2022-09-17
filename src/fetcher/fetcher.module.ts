@@ -1,4 +1,5 @@
-import { CacheModule, HttpModule, Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios'
 import { ISBNdbFetcherService } from './services/ISBN-db-fetcher.service';
 
 import * as fsStore from 'cache-manager-fs-hash';
