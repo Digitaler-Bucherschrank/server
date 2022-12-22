@@ -36,7 +36,7 @@
     "cache-manager-fs-hash": "1.0.0",
     "crypto": "^1.0.1",
     "dotenv": "^16.0.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "~6.6.1",
     "mongoose-autopopulate": "^0.16.1",
     "passport": "^0.6.0",
