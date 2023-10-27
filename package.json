@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@m8a/nestjs-typegoose": "^8.0.4",
-    "@nestjs/axios": "^0.1.0",
+    "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.0.11",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.11",
@@ -30,7 +30,7 @@
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.11",
     "@typegoose/typegoose": "9.12.0",
-    "axios": "^0.27.2",
+    "axios": "^1.6.0",
     "bcrypt": "^5.0.1",
     "cache-manager": "^4.1.0",
     "cache-manager-fs-hash": "1.0.0",
